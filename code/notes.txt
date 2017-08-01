@@ -1,0 +1,265 @@
+2001
+
+Andhra Pradesh
+==============
+
+GAUL_2008 is correct
+
+Tamil Nadu
+==========
+
+New district        | Carved from district
+-------------------------------------------
+513 (Dharmapuri)    | 519 (Krishnagiri)
+536 (Tirappur)      | 515 (Erode) and 511 (Coimbatore) [Tirappur created from parts of Erode and Coimbatore]**
+
+** merge all three districts
+
+GAUL_2008 is correct
+
+Karnataka
+=========
+
+New district        | Carved from district
+-------------------------------------------
+269 (Ramanagara)    | 246 (Bangalore Rural)
+253 (Chikballapura) | 264 (Kolar)
+260 (Gulbarga)      | 274 (Yadgir)
+
+GAUL_2008 is correct
+
+Kerala
+======
+
+277 (Idukki) - 276 (Ernakulam) [boundary between these two districts has shifted westwards in the last decade]**
+
+** Admin Atlas does not list this as a change
+
+GAUL_2008 is correct
+
+Maharashtra
+===========
+
+373 (Thane), 364 (Palghar) - NB artefact in GADM map?]**
+
+** Admin Atlas does not list any changes
+
+GAUL_2008 is correct
+
+Himachal Pradesh
+================
+
+GAUL_2008 is correct
+
+Gujarat
+=======
+
+New district         | Carved from district
+-------------------------------------------
+Tapi (162) | Surat (160)
+
+GAUL_2008 is correct
+
+Daman & Diu, Dadra & Nagar Haveli
+=================================
+
+GAUL_2008 is correct
+
+Goa, Lakshadweep, Kerala
+========================
+
+GAUL_2008 is correct
+
+Puducherry
+==========
+
+GAUL_2008 is correct
+
+A & N Islands
+=============
+
+New district         | Carved from district
+-------------------------------------------
+South Andaman (3)    | North & Middle Andaman (2)
+
+GAUL_2008 is correct
+
+Punjab
+======
+
+New district         | Carved from district
+-------------------------------------------
+Tam Taran (471)      | Amritsar (450)
+Barnala (451)        | Sangrur (469)
+Sahibzada Ajit (468) | Rupnagar (467) and Patiala (466)**
+
+The following districts created post-2011:
+Pathankot (465)      | Gurdaspur (457)
+Fazilka (455)        | Firozpur (456)
+
+** merge all three districts / manually edit map (trace/copy GAUL?)
+
+GAUL_2008 is correct
+
+Chandigarh
+==========
+
+GAUL_2008 is correct
+
+Uttarakhand
+===========
+
+GAUL_2008 is correct
+
+Haryana
+=======
+
+New district         | Carved from district
+-------------------------------------------
+Mewat (178)          | Gurgaon (170)
+Palwal (179)         | Faridabad (168)
+
+GAUL_2008 is correct
+
+NCT of Delhi
+============
+
+GAUL_2008 is correct
+
+Rajasthan
+=========
+
+New district         | Carved from district
+-------------------------------------------
+Pratapgarh (498)     | Chittaurgarh (481), Banswara (474), Udaipur (504)**
+
+** This change is more complicated than most - Pratapgarh is carved out of small parts of all three other districts
+
+GAUL_2008 is correct
+
+Bihar
+=====
+
+New district         | Carved from district
+-------------------------------------------
+Arwal (63)           | Jehanabad (74)
+
+GAUL_2008 is correct
+
+Sikkim
+======
+
+-
+
+Nagaland
+========
+
+New district         | Carved from district
+-------------------------------------------
+Peren (410)          | Kohima (406)
+Kiphire (405) & Longleng (407) | Tuensang (412)
+
+GAUL_2008 is correct
+
+Manipur, Mizoram, Tripura, Meghalaya
+====================================
+
+-
+
+GAUL_2008 is correct
+
+Assam
+=====
+
+New district         | Carved from district
+-------------------------------------------
+Chirang (39)         | Kokrajhar (53), Bongaigaon (37), Barpeta (36)
+Baksa (35)           | Kamrup (50), Nalbari (57), Barpeta (36)
+Kamrup Metropolitan (49) | Kamrup (50)
+Udalguri (61)        | Darrang (40), Sonitpur (59)** DONE
+
+** It doesn't look like any of Udalguri was taken from Sonitpur
+
+Assuming the above, GAUL_2008 is correct
+
+Orissa
+======
+
+-
+
+Chhattisgarh
+============
+
+New district         | Carved from district
+-------------------------------------------
+Narayanpur (120)     | Bastar (104)
+Bijapur (106)        | Dantewada (108)
+
+GAUL_2008 is correct
+
+
+
+Uttar Pradesh
+=============
+
+New district         | Carved from district
+-------------------------------------------
+Kanshiram Nagar      | Etah (581)
+(Kasganj; 602)
+
+The following districts created post-2011:
+Sambhal (622)        | Moradabad (615), Buduan (576)
+Amethi (563)         | Rae Bareli (619), Sultanpur (631)
+Shamli (626)         | Muzaffarnagar (616)
+Hapur (593)          | Ghaziabad (588)
+
+GAUL_2008 gets Kanpur Dehat/Kanpur wrong (GADM is right); otherwise
+right - edit in QGIS
+
+Arunachal Pradesh
+=================
+
+New district         | Carved from district
+-------------------------------------------
+Kurung Kumey (22)    | Lower Subansiri (26)
+Lower Dibang Valley (25) | Dibang Valley (19)
+Anjaw (17)           | Lohit (23)
+
+GAUL_2008 is a mess for this district - perhaps because it is a
+disputed territory
+
+West Bengal
+===========
+
+New district         | Carved from district
+-------------------------------------------
+Purba Medinipur (663,70291) | Pashchim Medinipur (662,70296)
+
+GAUL_2008 includes Purba Medinipur
+
+Jharkhand
+=========
+
+New district         | Carved from district
+-------------------------------------------
+Latehar (234,70149) | Palamu (237,70151)
+Ramgarh (240) | Hazaribagh (230)
+Jamtara (231,70147) | Dumka (225,70142)
+Khunti (232)  | Ranchi (241)
+Simdega (244,70156) | Gumla (229,70145)
+Saraikela-Kharsawan (243,70155) | Pashchim Singhbhum (238,70152)
+
+GAUL_2008 only includes two of the above changes
+
+Madhya Pradesh
+==============
+
+New district         | Carved from district
+-------------------------------------------
+Ashoknagar (293,70169) | Guna (308,17726)
+Anuppur (70168,292)    | Shahdol (330,17748)
+Burhanpur (299,70171)  | East Nimar (307,17725)
+Alirajpur (291)        | Jhabua (314)
+Singrauli (335)        | Sidhi (334)
+
+GAUL_2008 only includes two of the above changes
