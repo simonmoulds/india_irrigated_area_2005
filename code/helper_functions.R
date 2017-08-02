@@ -141,6 +141,13 @@ district_groundwater_frac <- function(x, y, useGIA=TRUE, na.ix, glm=FALSE, plot=
 
 write_output = function(x, minval = 0, ...) {
 
+    ## TODO: get relevant MapSPAM data (irrigated and rainfed
+    ## area values for 42 crop types
+    
+    ## ==================================
+    ## cereals
+    ## ==================================
+    
     ## rice
     irri_rice_autumn = x[["irr_rice-autumn"]]
     irri_rice_winter = x[["irr_rice-winter"]]
@@ -190,7 +197,11 @@ write_output = function(x, minval = 0, ...) {
     rain_other_cereal_kharif = pmax(x[["apy_other_cereals-kharif"]] - irri_other_cereal_kharif, minval)
     irri_other_cereal_rabi   = pmax(x[["irr_other_cereals-rabi"]], minval)
     rain_other_cereal_rabi   = pmax(x[["apy_other_cereals-rabi"]] - irri_other_cereals_rabi, minval)
-        
+
+    ## ==================================
+    ## pulses
+    ## ==================================
+    
     ## chickpea columns
     irri_chickpea_rabi   = pmax(pmin(x[["irr_chickpea"]], x[["apy_chickpea-rabi"]]), minval)
     rain_chickpea_rabi   = pmax(x[["apy_chickpea-rabi"]] - irri_chickpea_rabi, minval)
@@ -202,27 +213,41 @@ write_output = function(x, minval = 0, ...) {
     rain_pigeonpea_rabi   = pmax(x[["apy_pigeonpea-rabi"]] - irri_pigeonpea_rabi, minval)
     irri_pigeonpea_kharif = pmax(x[["irr_pigeonpea"]] - irri_pigeonpea_rabi, minval)
     rain_pigeonpea_kharif = pmax(x[["apy_pigeonpea-kharif"]] - irri_pigeonpea_kharif, minval)
-
-    ## cowpea columns
-    cowpea_cols =
-        c("apy_cowpea-kharif",
-          "apy_cowpea-rabi")
-
-    ## lentil columns
-    lentil_cols =
-        c("apy_lentil-kharif",
-          "apy_lentil-rabi",
-          "apy_lentil-whole_year")
-
+    
     ## other pulses
     irri_other_pulses_kharif = pmax(x[["irr_other_pulses-kharif"]], minval)
     rain_other_pulses_kharif = pmax(x[["apy_other_pulses-kharif"]] - irri_other_pulses_kharif, minval)
     irri_other_pulses_rabi   = pmax(x[["irr_other_pulses-rabi"]], minval)
     rain_other_pulses_rabi   = pmax(x[["apy_other_pulses-rabi"]] - irri_other_pulses_rabi, minval)
+
+
+    ## get irrigated fraction for kharif/rabi pulses, to use with
+    ## cowpea and lentils
+    f_kharif = irri_other_pulses_kharif / (irri_other_pulses_kharif + rain_other_pulses_rabi)
+    f_rabi = irri_other_pulses_rabi / (irri_other_pulses_rabi + rain_other_pulses_rabi)
     
+    ## cowpea columns
+    irri_cowpea_kharif = x[["apy_cowpea-kharif"]] * f_kharif
+    rain_cowpea_kharif = x[["apy_cowpea-kharif"]] - irri_cowpea_kharif
+    irri_cowpea_rabi = x[["apy_cowpea-rabi"]]  * f_rabi
+    rain_cowpea_rabi = x[["apy_cowpea-rabi"]] - irri_cowpea_rabi
+    
+    ## lentil columns
+    irri_lentil_kharif = x[["apy_lentil-kharif"]] * f_kharif
+    rain_lentil_kharif = x[["apy_lentil-kharif"]] - irri_lentil_kharif
+    irri_lentil_rabi = x[["apy_lentil-rabi"]]  * f_rabi
+    rain_lentil_rabi = x[["apy_lentil-rabi"]] - irri_lentil_rabi
+
+    ## ==================================
     ## sugarcane
+    ## ==================================
+    
     irri_sugarcane_annual = pmax(pmin(x[["irr_sugarcane-whole_year"]], x[["apy_sugarcane-whole_year"]]), minval)
     rain_sugarcane_annual = pmax(x[["apy_sugarcane-whole_year"]] - irri_sugarcane_annual, minval)
+
+    ## ==================================
+    ## oil crops
+    ## ==================================
     
     ## groundnut columns
     irri_groundnut_rabi   = pmax(pmin(x[["irr_groundnut"]], x[["apy_groundnut-rabi"]]), minval)
@@ -259,6 +284,10 @@ write_output = function(x, minval = 0, ...) {
     rain_other_oil_crops_rabi   = pmax(x[["apy_other_oil_crops-rabi"]] - irri_other_oil_crops_rabi, minval)
     irri_other_oil_crops_kharif = pmax(x[["irr_other_oil_crops"]] - irri_other_oil_crops_rabi, minval)
     rain_other_oil_crops_kharif = pmax(x[["apy_other_oil_crops-kharif"]] - irri_other_oil_crops_kharif, minval)
+
+    ## ==================================
+    ## fruit
+    ## ==================================
     
     ## banana columns
     banana_cols =

@@ -11,9 +11,9 @@ options(stringsAsFactors = FALSE)
 ## 1 - Administrative boundaries (GAUL)
 ## ======================================
 
-## system("unzip -o data/rawdata/IND_adm_gpkg.zip -d data/IND_adm")
+adm2 = readOGR("data-raw/india_adm2_2001/data", layer="g2008_2_India")
 
-adm2 = readOGR("/home/simon/projects/india_adm2_2001/data", layer="g2008_2_India")
+## UNCOMMENT IF REQUIRED:
 
 ## ## administrative polygons
 ## dat =
@@ -43,7 +43,7 @@ dist_lut = read.csv("data/district_name_lut.csv", header=TRUE)
 
 rename_states = function(x, lut) {
     ## Function to rename State names using a lookup table
-
+    
     states=gsub("^\\s+|\\s+$", "", x$State)
     repl = lut$Name[match(states, lut$State)]
     x$State = repl
@@ -195,6 +195,9 @@ cia_nonfood = cia_nonfood[!duplicated(cia_nonfood[,1:3]),]
 
 ## GAUL codes
 gaul_lut = read.csv("data/indiastat_gaul_lut.csv", header=TRUE)
+
+## UNCOMMENT IF NEEDED:
+
 ## all(irr$State %in% gaul_lut$STATE_NAME)       ## check
 ## all(irr$District %in% gaul_lut$DISTRICT_NAME) ## check
 
@@ -329,22 +332,6 @@ apy_area =
 
 crop_nms = names(apy_prod)[4:ncol(apy_prod)]
 
-## 12/07/2017 - I think this would be a sensible idea and perfectly
-## justifiable considering that the main purpose of the dataset is
-## to show crop change at the macro level
-
-## for (i in 1:length(crop_nms)) {
-##     nm = crop_nms[i]
-##     pattern = paste0("^", nm, "-")
-##     col_ix = grep(pattern, names(apy_area), value=FALSE)
-##     prod = apy_prod[[nm]]
-##     ordr = order(prod)
-##     ix = which(cumsum(prod[ordr]) / sum(prod) < 0.001) %>% match(ordr) ## 0.001 is 0.01% (?)
-##     sd = apy_prod[ix,c("State","District")] %>% arrange(State, District)
-##     row_ix = match(interaction(apy_area$State, apy_area$District), interaction(sd$State, sd$District))
-##     apy_area[,col_ix] = lapply(apy_area[,col_ix], function(x) replace(x, row_ix, 0))
-## }
-
 names(apy_area)[-(1:4)] %<>% paste0("apy_", .)
 
 irr_area = irr
@@ -362,31 +349,37 @@ saveRDS(combined_data, "data/apy_indiastat_combined_data.rds")
 ## 5 - check data quality
 ## ======================================
 
-ap_totals = apy_area %>%
-    filter(State %in% "Andhra Pradesh") %>%
-    gather(Crop, Value, -(State:Year)) %>%
-    group_by(Crop) %>%
-    summarise_each(funs(sum(., na.rm=TRUE)), Value)
-
-ap_totals = ap_totals[order(ap_totals$Value),] %>% as.data.frame
+state_crop_totals = function(x, state_nm) {
+    x %>%
+        filter(State %in% state_nm) %>%
+        gather(Crop, Value, -(State:Year)) %>%
+        group_by(Crop) %>%
+        summarise_each(funs(sum(., na.rm=TRUE)), Value) %>%
+        `[`(order(.[["Value"]]),) %>%
+        as.data.frame
+}
     
-## how to do this?
-crop_totals =
-    read.csv(file.path("data","apy.csv")) %>%
-    filter(Crop_Year %in% c(2000:2011)) %>%
-    mutate_each(funs(trimws), State_Name, District_Name, Season, Crop) %>%
-    mutate_each(funs(replace(., .=="Telangana","Andhra Pradesh")), State_Name) %>%
-    rename(State=State_Name,
-           District=District_Name,
-           Year=Crop_Year,
-           APY_CROP=Crop) %>%
-    rename_states(state_lut) %>%
-    rename_districts(dist_lut) %>%
-    dplyr::select(-Production) %>%
-    group_by(APY_CROP) %>%
-    summarise_each(funs(sum(., na.rm=TRUE)), Area)
+ap_totals = state_crop_totals(apy_area, "Andhra Pradesh")
 
-crop_totals = crop_totals[order(crop_totals$Area),] %>% as.data.frame
+
+
+## ## how to do this?
+## crop_totals =
+##     read.csv(file.path("data","apy.csv")) %>%
+##     filter(Crop_Year %in% c(2000:2011)) %>%
+##     mutate_each(funs(trimws), State_Name, District_Name, Season, Crop) %>%
+##     mutate_each(funs(replace(., .=="Telangana","Andhra Pradesh")), State_Name) %>%
+##     rename(State=State_Name,
+##            District=District_Name,
+##            Year=Crop_Year,
+##            APY_CROP=Crop) %>%
+##     rename_states(state_lut) %>%
+##     rename_districts(dist_lut) %>%
+##     dplyr::select(-Production) %>%
+##     group_by(APY_CROP) %>%
+##     summarise_each(funs(sum(., na.rm=TRUE)), Area)
+
+## crop_totals = crop_totals[order(crop_totals$Area),] %>% as.data.frame
 
 
 
@@ -438,4 +431,31 @@ crop_totals = crop_totals[order(crop_totals$Area),] %>% as.data.frame
 ## cia_food_nms = c("State", "District", "Year", "Gram (Cicerarietinum)", "Tur or Arhar (Cajanusindicus)", "Other Pulses (Excluding Gram and Tur or Arhar)-Kharif", "Other Pulses (Excluding Gram and Tur or Arhar)-Rabi", "Other Pulses (Excluding Gram and Tur or Arhar)-Total", "Total Pulses", "Total Food Grains", "Sugarcane (Saccharumofficinarum)", "Condiments and Spices", "Fruits and Vegetables Including root crops", "Other Food Crops", "Total Food Crops")
 
 ## cia_nonfood_nms =  c("State", "District", "Year", "Groundnut (Arachishypozes)", "Sesamum (Til or Jinjili) (Sesamum indicum)", "Rape & Mustard (Brassicasp)", "Linseed (Linumusitatissimum)", "Soyabean", "Sunflower", "Others", "Total", "Cotton (Gossyptumsp)", "Tobacco (Nicotianatobacum & N. Rustica)", "Fodder Crops", "Other Non-food Crops", "Total Non-food Crops", "Total (Under all Crops)")
+
+
+
+
+
+
+
+
+
+
+## not used:
+
+## 12/07/2017 - I think this would be a sensible idea and perfectly
+## justifiable considering that the main purpose of the dataset is
+## to show crop change at the macro level
+
+## for (i in 1:length(crop_nms)) {
+##     nm = crop_nms[i]
+##     pattern = paste0("^", nm, "-")
+##     col_ix = grep(pattern, names(apy_area), value=FALSE)
+##     prod = apy_prod[[nm]]
+##     ordr = order(prod)
+##     ix = which(cumsum(prod[ordr]) / sum(prod) < 0.001) %>% match(ordr) ## 0.001 is 0.01% (?)
+##     sd = apy_prod[ix,c("State","District")] %>% arrange(State, District)
+##     row_ix = match(interaction(apy_area$State, apy_area$District), interaction(sd$State, sd$District))
+##     apy_area[,col_ix] = lapply(apy_area[,col_ix], function(x) replace(x, row_ix, 0))
+## }
 
