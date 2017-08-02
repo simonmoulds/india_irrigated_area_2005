@@ -3,6 +3,13 @@
 ## Version : 0.1
 ## Licence : GPL v3
 
+library(magrittr)
+library(dplyr)
+library(tidyr)
+library(raster)
+library(rgdal)
+library(gdalUtils)
+
 ## Here we generate a template raster image with the correct extent and
 ## resolution for India
 
@@ -90,11 +97,13 @@ rgn_map[state_map %in% india_east_code]  = 2
 rgn_map[state_map %in% india_south_code] = 3
 rgn_map[state_map %in% india_west_code]  = 4
 
-## ======================================
-## 1. district fraction maps
-## ======================================
+writeRaster(dist_map, "data/g2008_2_India_rast.tif", format="GTiff", overwrite=TRUE)
+writeRaster(state_map, "data/g2008_1_India_rast.tif", format="GTiff", overwrite=TRUE)
+writeRaster(rgn_map, "data/g2008_rgn_India_rast.tif", format="GTiff", overwrite=TRUE)
 
-## a. Albers Equal Area projection
+## ======================================
+## 2. district fraction maps
+## ======================================
 
 ## create directory to store output
 if (!dir.exists("data/district_frac")) {
@@ -150,8 +159,10 @@ myfun = function(adm2, nb, template_coarse, template_fine, path, suffix, ...) {
     }
 }
 
+## a. Albers Equal Area projection
 myfun(adm2_aea, nb_india_aea, template_coarse_aea, template_fine_aea, path="data/district_frac", suffix="aea")
 
+## b. Latitude-longitude
 myfun(adm2_ll, nb_india_ll, template_coarse_ll, template_fine_ll, path="data/district_frac", suffix="ll")
 
 ## ======================================
@@ -165,9 +176,9 @@ if (!dir.exists("data/mapspam")) {
     dir.create("data/mapspam")
 }
 
-system("unzip -o data-raw/spam2005V3r1_global_phys_area.geotiff.zip -d data/mapspam")
+system("unzip -o data-raw/MapSPAM/spam2005V3r1_global_harv_area.geotiff.zip -d data/mapspam")
 
-fs = list.files("data/mapspam", "SPAM2005V3r1_global_A_T(A|I|R)_[A-Z]{4}_(A|I|R).tif$", full.names=TRUE)
+fs = list.files("data/mapspam", "SPAM2005V3r1_global_H_T(A|I|R)_[A-Z]{4}_(A|I|R).tif$", full.names=TRUE)
 
 for (i in 1:length(fs)) {
     f = fs[i]
