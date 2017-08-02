@@ -3,5 +3,10 @@
 .Rhistory
 not-used
 doc
-data-raw
-data
+data-raw/FAO_GAUL_boundary_levels.zip
+data-raw/MapSPAM
+data-raw/india_adm2_2001
+data/g2008_*
+data/district_frac
+data/mapspam
+data/*.pdf
