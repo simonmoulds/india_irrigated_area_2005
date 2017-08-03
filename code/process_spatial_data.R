@@ -122,8 +122,10 @@ myfun = function(adm2, nb, template_coarse, template_fine, path, suffix, ...) {
     ## get unique districts in study region
     dists <- sort(unique(getValues(district_fine)))
 
-    for (i in 1:length(dists)) {    
+    for (i in 1:length(dists)) {
         dist <- dists[i]
+        print(dist)
+        
         tmp1 <- district_fine 
         tmp1[(!is.na(tmp1) & tmp1 != dist)] <- 0
 
@@ -160,10 +162,10 @@ myfun = function(adm2, nb, template_coarse, template_fine, path, suffix, ...) {
 }
 
 ## a. Albers Equal Area projection
-myfun(adm2_aea, nb_india_aea, template_coarse_aea, template_fine_aea, path="data/district_frac", suffix="aea")
+myfun(adm2_aea, india_nb_aea, template_coarse_aea, template_fine_aea, path="data/district_frac", suffix="aea")
 
 ## b. Latitude-longitude
-myfun(adm2_ll, nb_india_ll, template_coarse_ll, template_fine_ll, path="data/district_frac", suffix="ll")
+myfun(adm2_ll, india_nb_ll, template_coarse_ll, template_fine_ll, path="data/district_frac", suffix="ll")
 
 ## ======================================
 ## MapSPAM

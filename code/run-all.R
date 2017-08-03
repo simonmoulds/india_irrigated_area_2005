@@ -28,7 +28,7 @@ adm2 = readOGR("data-raw/india_adm2_2001/data", layer="g2008_2_India")
 ## ======================================
 
 ## unpack original data (overwriting if necessary)
-system("unrar -o+ x data-raw/Time_series_agri_data.rar data")
+system("unrar -xf data-raw/Time_series_agri_data.rar data")
 system("cp data-raw/apy.csv data")
 
 ## get lookup tables for state/district names
@@ -216,7 +216,7 @@ irr =
     left_join(gaul_lut, by=c("State", "District")) %>%
     filter(!is.na(GAUL_CODE)) %>%
     group_by(GAUL_CODE, Year, State) %>%
-    summarise_each(funs(sum(., na.rm=TRUE)), -District, -GAUL_NAME) %>%
+    summarise_at(vars(-District, -GAUL_NAME), funs(sum(., na.rm=TRUE))) %>%
     gather(Crop, Area, -(GAUL_CODE:State)) %>%
     spread(Year, Area) %>%
     gather(Year, Area, -(GAUL_CODE:Crop)) %>%
@@ -242,8 +242,8 @@ apy =
     read.csv(file.path("data", "apy.csv")) %>%
     ## read.csv("data/rawdata/apy.csv") %>%
     filter(Crop_Year %in% c(2000:2011)) %>%
-    mutate_each(funs(trimws), State_Name, District_Name, Season, Crop) %>%
-    mutate_each(funs(replace(., .=="Telangana","Andhra Pradesh")), State_Name) %>%
+    mutate_at(vars(State_Name, District_Name, Season, Crop), funs(trimws)) %>%
+    mutate_at(vars(State_Name), funs(replace(., .=="Telangana","Andhra Pradesh"))) %>%
     rename(State=State_Name,
            District=District_Name,
            Year=Crop_Year,
@@ -253,13 +253,11 @@ apy =
     left_join(apy_mapspam_lut, by=c("APY_CROP")) %>%
     filter(!is.na(MAPSPAM_CROP)) %>%
     group_by(State, District, Year, Season, MAPSPAM_CROP) %>%
-    summarise_each(funs(sum(., na.rm=TRUE)), -APY_CROP) %>%
+    summarise_at(vars(-APY_CROP), funs(sum(., na.rm=TRUE))) %>%
     left_join(gaul_lut, by=c("State","District")) %>%
     filter(!is.na(GAUL_CODE)) %>%
     group_by(State, GAUL_CODE, Year, Season, MAPSPAM_CROP) %>%
-    summarise_each(funs(sum(., na.rm=TRUE)),
-                   -District,
-                   -GAUL_NAME) %>%
+    summarise_at(vars(-District, -GAUL_NAME), funs(sum(., na.rm=TRUE))) %>%
     ungroup() %>%
     gather(Element, Value, -(State:MAPSPAM_CROP)) %>%
     spread(Year, Value) %>%
@@ -318,10 +316,10 @@ apy_prod =
     gather(Crop, Value, -(State:Year)) %>%
     separate(Crop, c("Crop","Season"), sep="-") %>%
     group_by(State, District, GAUL_CODE, Year, Crop) %>%
-    summarise_each(funs(sum(., na.rm=TRUE)), Value) %>% ## removes NA
+    summarise_at(vars(Value), funs(sum(., na.rm=TRUE))) %>% ## removes NA
     ungroup %>%
     group_by(State, District, GAUL_CODE, Crop) %>%
-    summarise_each(funs(max(., na.rm=TRUE)), Value) %>%
+    summarise_at(vars(Value), funs(max(., na.rm=TRUE))) %>%
     spread(Crop, Value) ## %>%
     ## filter(Year %in% 2005)
 
@@ -345,6 +343,50 @@ combined_data =
 
 saveRDS(combined_data, "data/apy_indiastat_combined_data.rds")
 
+## experimenting
+mapspam_irri_fs = list.files("data/mapspam", "SPAM2005V3r1_global_H_TI_[A-Z]{4}_I_India_ll.tif$") %>% sort
+mapspam_total_fs = list.files("data/mapspam", "SPAM2005V3r1_global_H_TA_[A-Z]{4}_A_India_ll.tif$") %>% sort
+
+dists = unique(combined_data[["GAUL_CODE"]])
+
+myfun = function(dist, path, irri_map, total_map, ...) {
+    fn = paste0("dist_", dist, "_frac1ll.tif")
+    if (!file.exists(file.path(path, fn))) {
+        stop()
+    }
+
+    r = raster(file.path(path, fn))
+    pts = as(r, "SpatialPoints")
+    frac = r[pts] %>% `[<-`(is.na(.), 0)
+    irri = irri_map[pts] %>% `[<-`(is.na(.), 0)
+    total = total_map[pts] %>% `[<-`(is.na(.), 0)
+    irri_sum = sum(irri * frac)
+    total_sum = sum(total * frac)
+    rain_sum = total_sum - irri_sum
+    irri_frac = irri_sum / total_sum
+    return(list(irri=irri_sum, rain=rain_sum, irri_frac=irri_frac))
+}
+
+
+## NB finger millet assigned to pearl millet, because mapspam
+## doesn't include this pulse
+mapspam_crop_nms = list("BANA","BARL","CASS","CHIC","CNUT",c("ACOF","RCOF"),"COTT","COWP","PMIL","GROU","LENT","MAIZ","OCER","OFIB","OOIL","OPUL","PMIL","PIGE","POTA","RAPE","REST","RICE","SESA","SORG","SOYB","SUGC","SUNF","SWPO","TEAS","TEMF","TOBA","TROF","VEGE","WHEA","YAMS")
+
+for (i in 1:length(crop_nms)) {
+    nm = crop_nms[i]
+    ix = grep(nm, names(combined_data)) %>% max
+    ## and so on
+
+}
+
+
+## "BEAN" ## bean
+## "COCO" ## cocoa
+## "ORTS" ## other roots
+## "PLNT" ## plantain
+## "SMIL" ## small millet
+## "SUGB" ## sugarbeet
+
 ## ======================================
 ## 5 - check data quality
 ## ======================================
@@ -354,7 +396,7 @@ state_crop_totals = function(x, state_nm) {
         filter(State %in% state_nm) %>%
         gather(Crop, Value, -(State:Year)) %>%
         group_by(Crop) %>%
-        summarise_each(funs(sum(., na.rm=TRUE)), Value) %>%
+        summarise_at(vars(Value), funs(sum(., na.rm=TRUE))) %>%
         `[`(order(.[["Value"]]),) %>%
         as.data.frame
 }
