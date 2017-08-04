@@ -229,7 +229,31 @@ irr =
     left_join(unique(gaul_lut[c("State","ADM2_CODE","ADM2_NAME")]), by="ADM2_CODE") %>%
     dplyr::select(State, ADM1_CODE, ADM2_NAME, ADM2_CODE, Year, everything()) %>%
     rename(District = ADM2_NAME) %>%
-    arrange(State, District, Year)    
+    arrange(State, District, Year) %>%
+    ungroup
+
+irr_area =
+    irr %>% 
+    add_column(`irr_cowpea-kharif` = rep(NA, nrow(.)),
+               `irr_cowpea-rabi` = rep(NA, nrow(.)),
+               `irr_lentil-kharif` = rep(NA, nrow(.)),
+               `irr_lentil-rabi` = rep(NA, nrow(.)),
+               irr_banana = rep(NA, nrow(.)),
+               irr_coconut = rep(NA, nrow(.)),
+               irr_yams = rep(NA, nrow(.)),
+               `irr_sweet_potato-kharif` = rep(NA, nrow(.)),
+               `irr_sweet_potato-rabi` = rep(NA, nrow(.)),
+               `irr_potato-kharif` = rep(NA, nrow(.)),
+               `irr_potato-rabi` = rep(NA, nrow(.)),
+               irr_cassava = rep(NA, nrow(.)),
+               `irr_vegetables-kharif` = rep(NA, nrow(.)),
+               `irr_vegetables-rabi` = rep(NA, nrow(.)),
+               irr_temperate_fruit = rep(NA, nrow(.)),
+               irr_tropical_fruit = rep(NA, nrow(.)),
+               irr_other_fibre_crops = rep(NA, nrow(.)),
+               irr_coffee = rep(NA, nrow(.)),
+               irr_tea = rep(NA, nrow(.)),
+               irr_rest_of_crops = rep(NA, nrow(.)))
 
 ## nms_lut = read.csv("data/indiastat_names_lut.csv", header=TRUE)
 ## names(irr) = nms_lut$NEWNAME[match(names(irr), nms_lut$OLDNAME)]
@@ -340,7 +364,7 @@ crop_nms =
 
 names(apy_area)[-(1:5)] %<>% paste0("apy_", .)
 
-irr_area = irr
+## irr_area = irr
 
 combined_data =
     bind_rows(apy_area[c("State","ADM1_CODE","District","ADM2_CODE","Year")],
@@ -458,7 +482,18 @@ state_crop_totals = function(x, state_nm) {
     
 ap_totals = state_crop_totals(apy_area, "Andhra Pradesh")
 
+mp_totals = state_crop_totals(apy_area, "Madhya Pradesh")
+up_totals = state_crop_totals(apy_area, "Uttar Pradesh")
 
+india_totals =
+    apy_area %>%
+    gather(Crop, Value, -(State:Year)) %>%
+    group_by(Crop) %>%
+    summarise_at(vars(Value), funs(sum(., na.rm=TRUE))) %>%
+    `[`(order(.[["Value"]]),) %>%
+    as.data.frame
+    
+    
 
 ## ## how to do this?
 ## crop_totals =

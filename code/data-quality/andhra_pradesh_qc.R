@@ -176,19 +176,43 @@ xx = check_data(2000:2010, xx, columns=c("irr_pigeonpea",
                            ## `apy_pigeonpea-winter`=c(),
                            ## `apy_pigeonpea-whole_year`=c()))
 
-xx = check_data(2000:2010, xx, columns=c("apy_cowpea-kharif",
+## TODO: MAKE SURE COWPEA IS DIVIDED BETWEEN KHARIF AND RABI ONLY
+irr_frac = (xx[["mapspam_irri_cowpea"]][6] / xx[["mapspam_total_cowpea"]][6]) %>% `[<-`(is.nan(.), 0)
+cowpea_total = xx[["apy_cowpea-kharif"]] + xx[["apy_cowpea-rabi"]]
+irr_cowpea_total = cowpea_total * irr_frac
+irr_cowpea_rabi = pmin(xx[["apy_cowpea-rabi"]], irr_cowpea_total)
+irr_cowpea_kharif = pmin(xx[["apy_cowpea-kharif"]], irr_cowpea_total - irr_cowpea_rabi)
+xx[["irr_cowpea-kharif"]] = irr_cowpea_kharif
+xx[["irr_cowpea-rabi"]] = irr_cowpea_rabi
+
+xx = check_data(2000:2010, xx, columns=c("irr_cowpea-kharif",
+                                         "irr_cowpea-rabi",
+                                         "apy_cowpea-kharif",
                                          "apy_cowpea-rabi",
                                          "mapspam_irri_cowpea",
                                          "mapspam_total_cowpea"),
                 na.ix=list(`apy_cowpea-kharif`=c(),
                            `apy_cowpea-rabi`=c()))
 
-## xx = check_data(2000:2010, xx, columns=c("apy_lentil-kharif",
-##                                          "apy_lentil-rabi",
-##                                          "apy_lentil-whole_year"),
-##                 na.ix=list(`apy_lentil-kharif`=c(),
-##                            `apy_lentil-rabi`=c(),
-##                            `apy_lentil-whole_year`=c()))
+## TODO: MAKE SURE LENTIL IS DIVIDED BETWEEN KHARIF AND RABI ONLY
+irr_frac = (xx[["mapspam_irri_lentil"]][6] / xx[["mapspam_total_lentil"]][6]) %>% `[<-`(is.nan(.), 0)
+lentil_total = xx[["apy_lentil-kharif"]] + xx[["apy_lentil-rabi"]]
+irr_lentil_total = lentil_total * irr_frac
+irr_lentil_rabi = pmin(xx[["apy_lentil-rabi"]], irr_lentil_total)
+irr_lentil_kharif = pmin(xx[["apy_lentil-kharif"]], irr_lentil_total - irr_lentil_rabi)
+xx[["irr_lentil-kharif"]] = irr_lentil_kharif
+xx[["irr_lentil-rabi"]] = irr_lentil_rabi
+
+xx = check_data(2000:2010, xx, columns=c("irr_lentil-kharif",
+                                         "irr_lentil-rabi",
+                                         "apy_lentil-kharif",
+                                         "apy_lentil-rabi",
+                                         "apy_lentil-whole_year",
+                                         "mapspam_irri_lentil",
+                                         "mapspam_total_lentil"),
+                na.ix=list(`apy_lentil-kharif`=c(),
+                           `apy_lentil-rabi`=c(),
+                           `apy_lentil-whole_year`=c()))
 
 xx = check_data(2000:2010, xx, columns=c("irr_other_pulses-kharif",
                                          "irr_other_pulses-rabi",
@@ -315,7 +339,12 @@ xx = check_data(2000:2010, xx, columns=c("irr_other_oil_crops",
                            ## `apy_other_oil_crops-winter`=c(),
                            ## `apy_other_oil_crops-whole_year`=c()))
 
-xx = check_data(2000:2010, xx, columns=c(##"apy_banana-kharif",
+## TODO: MAKE SURE BANANA IS ASSIGNED TO WHOLE YEAR
+irr_frac = (xx[["mapspam_irri_banana"]][6] / xx[["mapspam_total_banana"]][6]) %>% `[<-`(is.nan(.), 0)
+irr_banana = xx[["apy_banana-whole_year"]] * irr_frac
+xx[["irr_banana"]] = irr_banana
+xx = check_data(2000:2010, xx, columns=c("irr_banana",
+                                         ##"apy_banana-kharif",
                                          ##"apy_banana-rabi",
                                          ##"apy_banana-summer",
                                          "apy_banana-whole_year",
@@ -326,30 +355,75 @@ xx = check_data(2000:2010, xx, columns=c(##"apy_banana-kharif",
                            ##`apy_banana-summer`=c(),
                            `apy_banana-whole_year`=c()))
 
-xx = check_data(2000:2010, xx, columns=c(##"apy_coconut-kharif",
+## TODO: MAKE SURE COCONUT IS ASSIGNED TO WHOLE YEAR
+irr_frac = (xx[["mapspam_irri_coconut"]][6] / xx[["mapspam_total_coconut"]][6]) %>% `[<-`(is.nan(.), 0)
+irr_coconut = xx[["apy_coconut-whole_year"]] * irr_frac
+xx[["irr_coconut"]] = irr_coconut
+xx = check_data(2000:2010, xx, columns=c("irr_coconut",
+                                         ##"apy_coconut-kharif",
                                          "apy_coconut-whole_year",
                                          "mapspam_irri_coconut",
                                          "mapspam_total_coconut"),
                 na.ix=list(##`apy_coconut-kharif`=c(),
                            `apy_coconut-whole_year`=c()))
 
-## xx = check_data(2000:2010, xx, columns=c("apy_yams-whole_year"),
-##                 na.ix=list(`apy_yams-whole_year`=c()))
+## TODO: MAKE SURE YAMS IS ASSIGNED TO WHOLE YEAR
+irr_frac = (xx[["mapspam_irri_yams"]][6] / xx[["mapspam_total_yams"]][6]) %>% `[<-`(is.nan(.), 0)
+irr_yams = xx[["apy_yams-whole_year"]] * irr_frac
+xx[["irr_yams"]] = irr_yams
+xx = check_data(2000:2010, xx, columns=c("irr_yams",
+                                         "apy_yams-whole_year",
+                                         "mapspam_irri_yams",
+                                         "mapspam_total_yams"),
+                na.ix=list(`apy_yams-whole_year`=c()))
 
-xx = check_data(2000:2010, xx, columns=c(## "apy_sweet_potato-kharif",
-                                         ## "apy_sweet_potato-rabi",
-                                         "apy_sweet_potato-whole_year",
+
+## TODO: MAKE SURE SWEET POTATO IS DIVIDED BETWEEN KHARIF AND RABI ONLY
+
+## Sweet potato production can occur in either Kharif or Rabi. During
+## Rabi the crop requires irrigation, whereas during Kharif it is
+## typically grown as a rainfed crop.
+irr_frac = (xx[["mapspam_irri_sweet_potato"]][6] / xx[["mapspam_total_sweet_potato"]][6]) %>% `[<-`(is.nan(.), 0)
+sweet_potato_total = xx[["apy_sweet_potato-whole_year"]]
+irr_sweet_potato_total = sweet_potato_total * irr_frac
+
+xx[["apy_sweet_potato-kharif"]] = sweet_potato_total - irr_sweet_potato_total
+xx[["apy_sweet_potato-rabi"]] = irr_sweet_potato_total
+
+xx[["irr_sweet_potato-kharif"]] = 0
+xx[["irr_sweet_potato-rabi"]] = irr_sweet_potato_total
+
+xx = check_data(2000:2010, xx, columns=c("irr_sweet_potato-kharif",
+                                         "irr_sweet_potato-rabi",
+                                         "apy_sweet_potato-kharif",
+                                         "apy_sweet_potato-rabi",
+                                         ## "apy_sweet_potato-whole_year",
                                          "mapspam_irri_sweet_potato",
                                          "mapspam_total_sweet_potato"),
-                na.ix=list(## `apy_sweet_potato-kharif`=c(),
-                           ## `apy_sweet_potato-rabi`=c(),
-                           `apy_sweet_potato-whole_year`=c(1:11)))
+                na.ix=list(`apy_sweet_potato-kharif`=c(),
+                           `apy_sweet_potato-rabi`=c()))
+                           ## `apy_sweet_potato-whole_year`=c(1:11)))
 
-xx = check_data(2000:2010, xx, columns=c(## "apy_potato-kharif",
-                                         ## "apy_potato-rabi",
+## Due to South India climate, potato production in AP is most
+## likely to be during Rabi (see doc/notes_on_crop_calendar.odt)
+xx[["apy_potato-rabi"]] = rowSums(xx[,c("apy_potato-whole_year","apy_potato-rabi")], na.rm=TRUE)
+xx[["apy_potato-whole_year"]] = 0
+
+irr_frac = (xx[["mapspam_irri_potato"]][6] / xx[["mapspam_total_potato"]][6]) %>% `[<-`(is.nan(.), 0)
+potato_total = xx[["apy_potato-kharif"]] + xx[["apy_potato-rabi"]]
+irr_potato_total = potato_total * irr_frac
+irr_potato_rabi = pmin(xx[["apy_potato-rabi"]], irr_potato_total)
+irr_potato_kharif = pmin(xx[["apy_potato-kharif"]], irr_potato_total - irr_potato_rabi)
+xx[["irr_potato-kharif"]] = irr_potato_kharif
+xx[["irr_potato-rabi"]] = irr_potato_rabi
+
+xx = check_data(2000:2010, xx, columns=c("irr_potato-kharif",
+                                         "irr_potato-rabi",
+                                         "apy_potato-kharif",
+                                         "apy_potato-rabi",
                                          ## "apy_potato-summer",
                                          ## "apy_potato-winter",
-                                         "apy_potato-whole_year",
+                                         ## "apy_potato-whole_year",
                                          "mapspam_irri_potato",
                                          "mapspam_total_potato"),
                 na.ix=list(## `apy_potato-kharif`=c(),
@@ -358,7 +432,12 @@ xx = check_data(2000:2010, xx, columns=c(## "apy_potato-kharif",
                            ## `apy_potato-winter`=c(),
                            `apy_potato-whole_year`=c(1:11)))
 
-xx = check_data(2000:2010, xx, columns=c(##"apy_cassava-kharif",
+## TODO: MAKE SURE CASSAVA IS ASSIGNED TO WHOLE YEAR
+irr_frac = (xx[["mapspam_irri_cassava"]][6] / xx[["mapspam_total_cassava"]][6]) %>% `[<-`(is.nan(.), 0)
+irr_cassava = xx[["apy_cassava-whole_year"]] * irr_frac
+xx[["irr_cassava"]] = irr_cassava
+xx = check_data(2000:2010, xx, columns=c("irr_cassava",
+                                         ##"apy_cassava-kharif",
                                          ##"apy_cassava-rabi",
                                          "apy_cassava-whole_year",
                                          "mapspam_irri_cassava",
@@ -367,7 +446,14 @@ xx = check_data(2000:2010, xx, columns=c(##"apy_cassava-kharif",
                            ##`apy_cassava-rabi`=c(),
                            `apy_cassava-whole_year`=c()))
 
+veg_irri_frac = xx[["mapspam_irri_vegetables"]][6] / xx[["mapspam_total_vegetables"]][6]
+temf_irri_frac = xx[["mapspam_irri_temperate_fruit"]][6] / xx[["mapspam_total_temperate_fruit"]][6]
+trof_irri_frac = xx[["mapspam_irri_tropical_fruits"]][6] / xx[["mapspam_total_tropical_fruits"]][6]
+
 xx = check_data(2000:2010, xx, columns=c("irr_fruit_and_veg",
+                                         "irr_vegetables",
+                                         "irr_temperate_fruit",
+                                         "irr_tropical_fruit",
                                          "apy_vegetables-kharif",
                                          "apy_vegetables-rabi",
                                          ## "apy_vegetables-summer",
@@ -392,7 +478,8 @@ xx = check_data(2000:2010, xx, columns=c("irr_fruit_and_veg",
                            ## `apy_tropical_fruits-rabi`=c(),
                            `apy_tropical_fruits-whole_year`=c()))
 
-xx = check_data(2000:2010, xx, columns=c("apy_other_fibre_crops-kharif",
+xx = check_data(2000:2010, xx, columns=c("irr_other_fibre_crops",
+                                         "apy_other_fibre_crops-kharif",
                                          ## "apy_other_fibre_crops-rabi",
                                          ## "apy_other_fibre_crops-autumn",
                                          "apy_other_fibre_crops-whole_year",
@@ -416,10 +503,12 @@ xx = check_data(2000:2010, xx, columns=c("irr_cotton",
                            ## `apy_cotton-summer`=c(),
                            ## `apy_cotton-whole_year`=c()))
 
-## xx = check_data(2000:2010, xx, columns=c("apy_coffee-whole_year"),
+## xx = check_data(2000:2010, xx, columns=c("irr_coffee",
+##                                          "apy_coffee-whole_year"),
 ##                 na.ix=list(`apy_coffee-whole_year`=c()))
 
-xx = check_data(2000:2010, xx, columns=c(## "apy_tobacco-kharif",
+xx = check_data(2000:2010, xx, columns=c("irr_tobacco",
+                                         ## "apy_tobacco-kharif",
                                          ## "apy_tobacco-rabi",
                                          ## "apy_tobacco-summer",
                                          "apy_tobacco-whole_year",
@@ -430,12 +519,14 @@ xx = check_data(2000:2010, xx, columns=c(## "apy_tobacco-kharif",
                            ## `apy_tobacco-summer`=c(),
                            `apy_tobacco-whole_year`=c()))
 
-## xx = check_data(2000:2010, xx, columns=c("apy_tea-kharif",
+## xx = check_data(2000:2010, xx, columns=c("irr_tea",
+##                                          "apy_tea-kharif",
 ##                                          "apy_tea-whole_year"),
 ##                 na.ix=list(`apy_tea-kharif`=c(),
 ##                            `apy_tea-whole_year`=c()))
 
-xx = check_data(2000:2010, xx, columns=c("apy_rest_of_crops-kharif",
+xx = check_data(2000:2010, xx, columns=c("irr_rest_of_crops",
+                                         "apy_rest_of_crops-kharif",
                                          "apy_rest_of_crops-rabi",
                                          ## "apy_rest_of_crops-autumn",
                                          ## "apy_rest_of_crops-summer",
@@ -726,8 +817,8 @@ xx = check_data(2000:2010, xx, columns=c(##"apy_coconut-kharif",
                 na.ix=list(##`apy_coconut-kharif`=c(),
                            `apy_coconut-whole_year`=c()))
 
-## xx = check_data(2000:2010, xx, columns=c("apy_yams-whole_year"),
-##                 na.ix=list(`apy_yams-whole_year`=c()))
+xx = check_data(2000:2010, xx, columns=c("apy_yams-whole_year"),
+                na.ix=list(`apy_yams-whole_year`=c()))
 
 xx = check_data(2000:2010, xx, columns=c(## "apy_sweet_potato-kharif",
                                          ## "apy_sweet_potato-rabi",
