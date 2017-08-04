@@ -350,11 +350,6 @@ combined_data =
     left_join(apy_area)
 
 ## experimenting
-mapspam_irri_fs = list.files("data/mapspam", "SPAM2005V3r1_global_H_TI_[A-Z]{4}_I_India_ll.tif$") %>% sort
-mapspam_total_fs = list.files("data/mapspam", "SPAM2005V3r1_global_H_TA_[A-Z]{4}_A_India_ll.tif$") %>% sort
-
-dists = unique(combined_data[["ADM2_CODE"]])
-
 myfun = function(dist_map, irri_map, rain_map, ...) {
     pts = as(dist_map, "SpatialPoints")
     frac = dist_map[pts] %>% `[<-`(is.na(.), 0)
@@ -409,9 +404,9 @@ for (i in 1:length(crop_nms)) {
     ## get maps of harvested area for irrigated and total area (rainfed
     ## is then easily derived)
     mapspam_nm = mapspam_crop_nms[[i]]
-    irri_map = stack(paste0("data/mapspam/SPAM2005V3r1_global_H_TI_", mapspam_nm, "_I_India_ll.tif"))
+    irri_map = stack(paste0("data/mapspam_data/SPAM2005V3r1_global_H_TI_", mapspam_nm, "_I.tif"))
     irri_map = stackApply(irri_map, rep(1, nlayers(irri_map)), fun=sum)
-    rain_map = stack(paste0("data/mapspam/SPAM2005V3r1_global_H_TR_", mapspam_nm, "_R_India_ll.tif"))
+    rain_map = stack(paste0("data/mapspam_data/SPAM2005V3r1_global_H_TR_", mapspam_nm, "_R.tif"))
     rain_map = stackApply(rain_map, rep(1, nlayers(rain_map)), fun=sum)
     
     for (j in 1:length(dists)) {

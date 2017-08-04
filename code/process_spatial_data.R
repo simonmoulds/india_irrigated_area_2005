@@ -174,31 +174,31 @@ myfun(adm2_ll, india_nb_ll, template_coarse_ll, template_fine_ll, path="data/dis
 ## use mapspam to get irrigated fraction for crops where this is not
 ## available from agricultural inventory data
 
-if (!dir.exists("data/mapspam")) {
-    dir.create("data/mapspam")
+if (!dir.exists("data/mapspam_data")) {
+    dir.create("data/mapspam_data")
 }
 
-system("unzip -o data-raw/MapSPAM/spam2005V3r1_global_harv_area.geotiff.zip -d data/mapspam")
+system("unzip -o data-raw/MapSPAM/spam2005V3r1_global_harv_area.geotiff.zip -d data/mapspam_data")
 
-fs = list.files("data/mapspam", "SPAM2005V3r1_global_H_T(A|I|R)_[A-Z]{4}_(A|I|R).tif$", full.names=TRUE)
+## fs = list.files("data/mapspam", "SPAM2005V3r1_global_H_T(A|I|R)_[A-Z]{4}_(A|I|R).tif$", full.names=TRUE)
 
-for (i in 1:length(fs)) {
-    f = fs[i]
-    r = raster(f)
-    r = crop(r, extent(template_coarse_ll))
-    ext = alignExtent(extent(r), template)
-    r = setExtent(r, ext, keepres=TRUE)
-    aea_nm = paste0(sub("^([^.]*).*", "\\1", f), "_India_aea.tif")
-    ll_nm = paste0(sub("^([^.]*).*", "\\1", f), "_India_ll.tif")
-    writeRaster(r, ll_nm, format="GTiff", overwrite=TRUE, NAflag=-1)
-    ## gdalwarp(srcfile=file.path(ll_nm),
-    ##          dstfile=file.path(aea_nm),
-    ##          t_srs=aea.crs,
-    ##          r="bilinear",
-    ##          overwrite=TRUE,
-    ##          verbose=TRUE,
-    ##          output_Raster=FALSE)
-}
+## for (i in 1:length(fs)) {
+##     f = fs[i]
+##     r = raster(f)
+##     r = crop(r, extent(template_coarse_ll))
+##     ext = alignExtent(extent(r), template)
+##     r = setExtent(r, ext, keepres=TRUE)
+##     aea_nm = paste0(sub("^([^.]*).*", "\\1", f), "_India_aea.tif")
+##     ll_nm = paste0(sub("^([^.]*).*", "\\1", f), "_India_ll.tif")
+##     writeRaster(r, ll_nm, format="GTiff", overwrite=TRUE, NAflag=-1)
+##     ## gdalwarp(srcfile=file.path(ll_nm),
+##     ##          dstfile=file.path(aea_nm),
+##     ##          t_srs=aea.crs,
+##     ##          r="bilinear",
+##     ##          overwrite=TRUE,
+##     ##          verbose=TRUE,
+##     ##          output_Raster=FALSE)
+## }
 
 ## ## ======================================
 ## ## Siebert et al. (2015) maps

@@ -8,5 +8,5 @@ data-raw/MapSPAM
 data-raw/india_adm2_2001
 data/g2008_*
 data/district_frac
-data/mapspam
+data/mapspam_data
 data/*.pdf
