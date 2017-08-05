@@ -377,9 +377,6 @@ xx = check_data(2000:2010, xx, columns=c("irr_yams",
                                          "mapspam_total_yams"),
                 na.ix=list(`apy_yams-whole_year`=c()))
 
-
-## TODO: MAKE SURE SWEET POTATO IS DIVIDED BETWEEN KHARIF AND RABI ONLY
-
 ## Sweet potato production can occur in either Kharif or Rabi. During
 ## Rabi the crop requires irrigation, whereas during Kharif it is
 ## typically grown as a rainfed crop.
@@ -450,8 +447,16 @@ veg_irri_frac = xx[["mapspam_irri_vegetables"]][6] / xx[["mapspam_total_vegetabl
 temf_irri_frac = xx[["mapspam_irri_temperate_fruit"]][6] / xx[["mapspam_total_temperate_fruit"]][6]
 trof_irri_frac = xx[["mapspam_irri_tropical_fruits"]][6] / xx[["mapspam_total_tropical_fruits"]][6]
 
+## For 2005,
+
+## Using MapSPAM, get the proportion of roots and tubers (yams, sweet
+## potato, potato, cassava), vegetables, temperate and tropical fruit.
+## Multiply irr_fruit_and_veg by these values to get the irrigated area
+## of each class that is consistent with the Indiastat data.
+
 xx = check_data(2000:2010, xx, columns=c("irr_fruit_and_veg",
-                                         "irr_vegetables",
+                                         "irr_vegetables-kharif",
+                                         "irr_vegetables-rabi",
                                          "irr_temperate_fruit",
                                          "irr_tropical_fruit",
                                          "apy_vegetables-kharif",
@@ -463,11 +468,11 @@ xx = check_data(2000:2010, xx, columns=c("irr_fruit_and_veg",
                                          ## "apy_tropical_fruits-rabi",
                                          "apy_tropical_fruits-whole_year",
                                          "mapspam_irri_vegetables",
-                                         "mapspam_total_vegetables",
-                                         "mapspam_irri_temperate_fruit",
-                                         "mapspam_total_temperate_fruit",
-                                         "mapspam_irri_tropical_fruits",
-                                         "mapspam_total_tropical_fruits"),
+                                         "mapspam_total_vegetables"),
+                                         ## "mapspam_irri_temperate_fruit",
+                                         ## "mapspam_total_temperate_fruit",
+                                         ## "mapspam_irri_tropical_fruits",
+                                         ## "mapspam_total_tropical_fruits"),
                 na.ix=list(`irr_fruit_and_veg`=c(),
                            `apy_vegetables-kharif`=c(),
                            `apy_vegetables-rabi`=c(),
