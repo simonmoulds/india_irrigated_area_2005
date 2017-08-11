@@ -113,7 +113,7 @@ cia_cereal_nms = c("State","District","Year","irr_rice-autumn","irr_rice-winter"
 
 cia_food_nms = c("State","District","Year","irr_chickpea","irr_pigeonpea","irr_other_pulses-kharif","irr_other_pulses-rabi","irr_other_pulses-total","irr_total_pulses","irr_total_food_grains","irr_sugarcane","irr_condiments_and_spices","irr_fruit_and_veg","irr_other_food_crops","irr_total_food_crops")
 
-cia_nonfood_nms = c("State","District","Year","irr_groundnut","irr_sesamum","irr_rape_and_mustard","irr_linseed","irr_soyabean","irr_sunflower","irr_other_oil_crops","irr_total_oil_crops","irr_cotton","irr_tobacco","irr_fodder_crops","irr_other_nonfood_crops","irr_total_nonfood_crops","irr_total_all_crops")
+cia_nonfood_nms = c("State","District","Year","irr_groundnut","irr_sesameseed","irr_rapeseed","irr_linseed","irr_soybean","irr_sunflower","irr_other_oil_crops","irr_total_oil_crops","irr_cotton","irr_tobacco","irr_fodder_crops","irr_other_nonfood_crops","irr_total_nonfood_crops","irr_total_all_crops")
 
 ## group the above objects in a list, so that we can loop through
 ## them
@@ -211,7 +211,7 @@ gaul_lut =
 ## for all years. We do this after summarising to ensure that NAs are
 ## inserted in missing entries (these would be converted to 0 if we
 ## summarised afterwards because sum(NA, na.rm=TRUE) = 0
-irr =
+irr_area =
     sia %>%
     left_join(cia_cereal, by=c("State","District","Year")) %>%
     left_join(cia_food, by=c("State","District","Year")) %>%
@@ -232,28 +232,7 @@ irr =
     arrange(State, District, Year) %>%
     ungroup
 
-irr_area =
-    irr %>% 
-    add_column(`irr_cowpea-kharif` = rep(NA, nrow(.)),
-               `irr_cowpea-rabi` = rep(NA, nrow(.)),
-               `irr_lentil-kharif` = rep(NA, nrow(.)),
-               `irr_lentil-rabi` = rep(NA, nrow(.)),
-               irr_banana = rep(NA, nrow(.)),
-               irr_coconut = rep(NA, nrow(.)),
-               irr_yams = rep(NA, nrow(.)),
-               `irr_sweet_potato-kharif` = rep(NA, nrow(.)),
-               `irr_sweet_potato-rabi` = rep(NA, nrow(.)),
-               `irr_potato-kharif` = rep(NA, nrow(.)),
-               `irr_potato-rabi` = rep(NA, nrow(.)),
-               irr_cassava = rep(NA, nrow(.)),
-               `irr_vegetables-kharif` = rep(NA, nrow(.)),
-               `irr_vegetables-rabi` = rep(NA, nrow(.)),
-               irr_temperate_fruit = rep(NA, nrow(.)),
-               irr_tropical_fruit = rep(NA, nrow(.)),
-               irr_other_fibre_crops = rep(NA, nrow(.)),
-               irr_coffee = rep(NA, nrow(.)),
-               irr_tea = rep(NA, nrow(.)),
-               irr_rest_of_crops = rep(NA, nrow(.)))
+## TODO: now estimate seasonal irrigated area
 
 ## nms_lut = read.csv("data/indiastat_names_lut.csv", header=TRUE)
 ## names(irr) = nms_lut$NEWNAME[match(names(irr), nms_lut$OLDNAME)]
@@ -364,16 +343,14 @@ crop_nms =
 
 names(apy_area)[-(1:5)] %<>% paste0("apy_", .)
 
-## irr_area = irr
-
 combined_data =
     bind_rows(apy_area[c("State","ADM1_CODE","District","ADM2_CODE","Year")],
               irr_area[c("State","ADM1_CODE","District","ADM2_CODE","Year")]) %>%
     unique %>%
+    arrange(State, District, Year) %>%
     left_join(irr_area) %>%
     left_join(apy_area)
 
-## experimenting
 myfun = function(dist_map, irri_map, rain_map, ...) {
     pts = as(dist_map, "SpatialPoints")
     frac = dist_map[pts] %>% `[<-`(is.na(.), 0)
@@ -411,8 +388,8 @@ for (i in 1:length(crop_nms)) {
     nm = crop_nms[i]
     print(nm)
     
-    irri_col_nm = paste0("mapspam_irri_", nm)
-    total_col_nm = paste0("mapspam_total_", nm)
+    irri_col_nm = paste0("mapspam_xirr_", nm)
+    total_col_nm = paste0("mapspam_atot_", nm)
 
     if (!irri_col_nm %in% names(combined_data2)) {
         combined_data2 %<>% add_column(!!irri_col_nm:=NA)
@@ -458,43 +435,7 @@ for (i in 1:length(crop_nms)) {
 }
 
 saveRDS(combined_data2, "data/apy_indiastat_combined_data.rds")
-
-## "BEAN" ## bean
-## "COCO" ## cocoa
-## "ORTS" ## other roots
-## "PLNT" ## plantain
-## "SMIL" ## small millet
-## "SUGB" ## sugarbeet
-
-## ======================================
-## 5 - check data quality
-## ======================================
-
-state_crop_totals = function(x, state_nm) {
-    x %>%
-        filter(State %in% state_nm) %>%
-        gather(Crop, Value, -(State:Year)) %>%
-        group_by(Crop) %>%
-        summarise_at(vars(Value), funs(sum(., na.rm=TRUE))) %>%
-        `[`(order(.[["Value"]]),) %>%
-        as.data.frame
-}
     
-ap_totals = state_crop_totals(apy_area, "Andhra Pradesh")
-
-mp_totals = state_crop_totals(apy_area, "Madhya Pradesh")
-up_totals = state_crop_totals(apy_area, "Uttar Pradesh")
-
-india_totals =
-    apy_area %>%
-    gather(Crop, Value, -(State:Year)) %>%
-    group_by(Crop) %>%
-    summarise_at(vars(Value), funs(sum(., na.rm=TRUE))) %>%
-    `[`(order(.[["Value"]]),) %>%
-    as.data.frame
-    
-    
-
 ## ## how to do this?
 ## crop_totals =
 ##     read.csv(file.path("data","apy.csv")) %>%

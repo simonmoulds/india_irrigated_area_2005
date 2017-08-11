@@ -147,7 +147,7 @@ myfun = function(adm2, nb, template_coarse, template_fine, path, suffix, ...) {
 
         ## "*_frac1_*.tif" : coast cells set to 1, land border cells
         ## indicate fraction belonging to India
-        fn1 = paste0("dist_", dist, "_frac1", suffix, ".tif")
+        fn1 = paste0("dist_", dist, "_frac1_", suffix, ".tif")
         tmp1 <- writeRaster(tmp1, file.path(path, fn1), format="GTiff", overwrite=TRUE)
 
         tmp3[tmp3 == dist] <- 1
@@ -156,7 +156,7 @@ myfun = function(adm2, nb, template_coarse, template_fine, path, suffix, ...) {
         tmp3[tmp3 == 0] <- NA
 
         ## "*_frac2_*.tif" : all border cells (coast, land) set to 1
-        fn2 = paste0("dist_", dist, "_frac2", suffix, ".tif")
+        fn2 = paste0("dist_", dist, "_frac2_", suffix, ".tif")
         tmp3 <- writeRaster(tmp3, file.path(path, fn2), format="GTiff", overwrite=TRUE) 
     }
 }

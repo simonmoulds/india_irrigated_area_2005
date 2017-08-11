@@ -10,7 +10,7 @@ Banana,banana
 Barley,barley
 Beans & Mutter(Vegetable),vegetables
 Beet Root,vegetables
-Ber,tropical fruits
+Ber,tropical fruit
 Bhindi,vegetables
 Bitter Gourd,vegetables
 Blackgram,other pulses
@@ -25,7 +25,7 @@ Cashewnut Processed,rest of crops
 Cashewnut Raw,rest of crops
 Castor seed,other oil crops
 Cauliflower,vegetables
-Citrus Fruit,tropical fruits
+Citrus Fruit,tropical fruit
 Coconut,coconut
 Coffee,coffee
 Coriander,rest of crops
@@ -42,7 +42,7 @@ Grapes,temperate fruit
 Groundnut,groundnut
 Guar seed,rest of crops
 Horse-gram,other pulses
-Jack Fruit,tropical fruits
+Jack Fruit,tropical fruit
 Jowar,sorghum
 Jute,other fibre crops
 Jute & mesta,other fibre crops
@@ -51,9 +51,9 @@ Khesari,other pulses
 Korra,other cereals
 Lab-Lab,vegetables
 Linseed,other oil crops
-Litchi,tropical fruits
+Litchi,tropical fruit
 Maize,maize
-Mango,tropical fruits
+Mango,tropical fruit
 Masoor,lentil
 Mesta,other fibre crops
 Moong(Green Gram),other pulses
@@ -61,9 +61,9 @@ Moth,other pulses
 Niger seed,other oil crops
 Oilseeds total,NA
 Onion,vegetables
-Orange,tropical fruits
+Orange,tropical fruit
 Other Cereals & Millets,other cereals
-Other Citrus Fruit,tropical fruits
+Other Citrus Fruit,tropical fruit
 Other Dry Fruit,NA
 other fibres,other fibre crops
 Other Fresh Fruits,NA
@@ -73,15 +73,15 @@ other oilseeds,other oil crops
 Other  Rabi pulses,other pulses
 Other Vegetables,vegetables
 Paddy,rice
-Papaya,tropical fruits
+Papaya,tropical fruit
 Peach,temperate fruit
 Pear,temperate fruit
 Peas & beans (Pulses),other pulses
 Peas  (vegetable),vegetables
-Pineapple,tropical fruits
+Pineapple,tropical fruit
 Plums,temperate fruit
 Pome Fruit,temperate fruit
-Pome Granet,tropical fruits
+Pome Granet,tropical fruit
 Potato,potato
 Pulses total,NA
 Pump Kin,vegetables
@@ -109,6 +109,6 @@ Turmeric,rest of crops
 Turnip,vegetables
 Urad,other pulses
 Varagu,other cereals
-Water Melon,tropical fruits
+Water Melon,tropical fruit
 Wheat,wheat
 Yam,yams
