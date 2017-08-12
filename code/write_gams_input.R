@@ -42,18 +42,20 @@ years = x$Year %>% unique %>% sort
 dists = x$ADM2_CODE %>% unique
 
 ## get names of crops in each season
-kharif_crops = grep("kharif$", names(x), value=TRUE) %>% gsub("^[a-z]{3}_", "", .) %>% gsub("-kharif$", "", .) %>% unique %>% sort
+kharif_crops = grep("-kharif$", names(x), value=TRUE) %>% gsub("^[a-z]{3}_", "", .) %>% gsub("-kharif$", "", .) %>% unique %>% sort
 
-rabi_crops = grep("rabi$", names(x), value=TRUE) %>% gsub("^[a-z]{3}_", "", .) %>% gsub("-rabi$", "", .) %>% unique %>% sort
+rabi_crops = grep("-rabi$", names(x), value=TRUE) %>% gsub("^[a-z]{3}_", "", .) %>% gsub("-rabi$", "", .) %>% unique %>% sort
 
-summer_crops = grep("summer$", names(x), value=TRUE) %>% gsub("^[a-z]{3}_", "", .) %>% gsub("-summer$", "", .) %>% unique %>% sort
+summer_crops = grep("-summer$", names(x), value=TRUE) %>% gsub("^[a-z]{3}_", "", .) %>% gsub("-summer$", "", .) %>% unique %>% sort
 
-whole_year_crops = grep("whole_year$", names(x), value=TRUE) %>% gsub("^[a-z]{3}_", "", .) %>% gsub("-whole_year$", "", .) %>% unique %>% sort
+whole_year_crops = grep("-whole_year$", names(x), value=TRUE) %>% gsub("^[a-z]{3}_", "", .) %>% gsub("-whole_year$", "", .) %>% unique %>% sort
 
 n_kharif = length(kharif_crops)
 n_rabi = length(rabi_crops)
 n_summer = length(summer_crops)
 n_whole_year = length(whole_year_crops)
+
+whole_year_col_nms = paste0(c("irr_","rain_"), rep(whole_year_crops, each=2), "-whole_year")
 
 kharif_col_nms = paste0(c("irr_","rain_"), rep(kharif_crops, each=2), "-kharif")
 
@@ -61,10 +63,12 @@ rabi_col_nms = paste0(c("irr_","rain_"), rep(rabi_crops, each=2), "-rabi")
 
 summer_col_nms = paste0(c("irr_","rain_"), rep(summer_crops, each=2), "-summer")
 
-whole_year_col_nms = paste0(c("irr_","rain_"), rep(whole_year_crops, each=2), "-whole_year")
+all_col_nms = c(kharif_col_nms, rabi_col_nms, summer_col_nms, whole_year_col_nms) %>% unique
 
 for (i in 1:length(years)) {
     for (j in 1:length(dists)) {
+
+        xx = x[x$Year %in% years[i] & x$ADM2_CODE %in% dists[j],,drop=FALSE]
 
         ## get district frac (data/district_frac)
         dist_frac_map = raster(file.path("data", "district_frac", paste0("dist_", dists[j], "_frac1ll.tif")))
@@ -72,20 +76,26 @@ for (i in 1:length(years)) {
         dist_frac_val = dist_frac_map[dist_frac_pts]
         n_cell = length(dist_frac_pts)
 
-        kharif_tbl = as.data.frame(matrix(data=NA, nrow=n_cell, ncol=n_kharif * 2 + n_whole_year * 2)) %>% setNames(c(kharif_col_nms, whole_year_nms))
-        rabi_tbl = as.data.frame(matrix(data=NA, nrow=n_cell, ncol=n_rabi * 2 + n_whole_year * 2)) %>% setNames(c(rabi_col_nms, whole_year_nms))
+        ## TODO: get crop/irrigated area
+        ## TODO: get rice area (GRIPC)
         
-        summer_tbl = as.data.frame(matrix(data=NA, nrow=n_cell, ncol=n_summer * 2 + n_whole_year * 2)) %>% setNames(c(summer_col_nms, whole_year_nms))
-        
-        for (k in 1:length(crop_nms)) {
-            irr_kharif_nm = paste0("irr_", crop_nms[k], "-kharif")
-            apy_kharif_nm = paste0("irr_", crop_nms[k], "-kharif")
+        dist_tbl = as.data.frame(matrix(data=0, nrow=n_cell, ncol=length(all_col_nms))) %>% setNames(all_col_nms)
 
-            ## get biophysical suitability (data/mapspam_data)
-            ## get crop area
-            ## get irrigated area
-            ## get rice area
+        for (k in 1:length(all_col_nms)) {
+            nm = all_col_nms[i]
+            dist_total = xx[[nm]][1]
+
+            type = sub("^([a-z]+)_(.*)$", "\\1", nm)
+            crop_nm = sub("^([a-z]+)_(.*)-(.*)$", "\\2", nm)
             
+            if (dist_total > 0) {
+
+                ## TODO: get GAEZ code for crop name (lookup table?)
+                
+                if (isTRUE(grepl("^irr_", nm))) {
+                    ## TODO: get name of GAEZ suitability file
+                }
+            }
         }
     }
 }
