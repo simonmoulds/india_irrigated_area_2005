@@ -6,8 +6,16 @@ doc
 data-raw/FAO_GAUL_boundary_levels.zip
 data-raw/MapSPAM
 data-raw/india_adm2_2001
+data-raw/GAEZ
+data-raw/GRIPC
+data-raw/SCIENTIFIC_DATA_IRRIGATION_MAP_2000_2015.rar
+data-raw/cropland_hybrid_10042015v9.zip
 data/g2008_*
 data/district_frac
 data/mapspam_data
 data/*.pdf
 data/qc_plots
+data/SCIENTIFIC_DATA_IRRIGATION_MAP_2000_2015
+data/iiasa-ifpri-cropland-map
+data/GAEZ
+data-raw/IRRI South Asia Rice Map 2000-2001.zip

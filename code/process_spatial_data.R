@@ -255,69 +255,87 @@ system("unzip -o data-raw/MapSPAM/spam2005V3r1_global_harv_area.geotiff.zip -d d
 ##     writeRaster(x=st[[i]], filename=f, overwrite=TRUE)
 ## }
 
-## ## ======================================
-## ## FAO crop suitability
-## ## ======================================
+## ======================================
+## FAO crop suitability
+## ======================================
 
-## ## GAEZ crop suitability: use high input
-## fs <- list.files(file.path("data", "original", "FAO_suitability"), pattern="^.*suhi.*\\.zip", full.names=TRUE)
-## for (i in 1:length(fs)) {
+## GAEZ crop suitability: use high input
+fs <- list.files(file.path("data-raw", "GAEZ"), pattern="^res03crav6190[a-z]{8}_package.zip", full.names=TRUE)
 
-##     f <- fs[i]; print(f)
-##     d <- file.path(spatial_path, sub("^([^.]*).*", "\\1", basename(f)))
-##     unzip(f, exdir=d)
+outdir = file.path("data", "GAEZ")
+if (dir.exists(outdir)) {
+    unlink(outdir, recursive=TRUE)
+}
+dir.create(outdir)
 
-##     f <- list.files(d, pattern="^[^.]*.tif", full.names=TRUE)
-##     if (length(f) != 1) {
-##         stop()
-##     }
+for (i in 1:length(fs)) {
+
+    f <- fs[i]; print(f)
+    d <- file.path(outdir, sub("^([^.]*).*", "\\1", basename(f)))
+    unzip(f, exdir=d)
+
+    f <- list.files(d, pattern="^[^.]*.tif", full.names=TRUE)
+    if (length(f) != 1) {
+        stop()
+    }
     
-##     r <- raster(f)
-##     r <- crop(r, extent(template))
-##     ext <- alignExtent(extent(r), template)
-##     r   <- setExtent(r, ext, keepres=TRUE)
+    ## r <- raster(f)
+    ## ## r <- crop(r, extent(template))
+    ## ## ext <- alignExtent(extent(r), template)
+    ## ## r   <- setExtent(r, ext, keepres=TRUE)
 
-##     ## r[r == -1] <- 0  ## set all NA values to 0
-##     r[r == -1] <- NA
+    ## ## r[r == -1] <- 0  ## set all NA values to 0
+    ## r[r == -1] <- NA
 
-##     aea.nm <- file.path(spatial_path, paste0(sub("^([^.]*).*", "\\1", basename(f)), "_India_aea.tif"))
-##     ll.nm <- file.path(spatial_path, paste0(sub("^([^.]*).*", "\\1", basename(f)), "_India_ll.tif"))
+    ## aea.nm <- file.path(spatial_path, paste0(sub("^([^.]*).*", "\\1", basename(f)), "_India_aea.tif"))
+    ## ll.nm <- file.path(spatial_path, paste0(sub("^([^.]*).*", "\\1", basename(f)), "_India_ll.tif"))
 
-##     writeRaster(r, ll.nm, format="GTiff", overwrite=TRUE, NAflag=-1)
+    ## writeRaster(r, ll.nm, format="GTiff", overwrite=TRUE, NAflag=-1)
 
-##     gdalwarp(srcfile=file.path(ll.nm),
-##              dstfile=file.path(aea.nm),
-##              t_srs=aea.crs,
-##              r="bilinear",
-##              overwrite=TRUE,
-##              verbose=TRUE,
-##              output_Raster=FALSE)
+    ## gdalwarp(srcfile=file.path(ll.nm),
+    ##          dstfile=file.path(aea.nm),
+    ##          t_srs=aea.crs,
+    ##          r="bilinear",
+    ##          overwrite=TRUE,
+    ##          verbose=TRUE,
+    ##          output_Raster=FALSE)    
+
+}
+
+## ======================================
+## GRIPC
+## ======================================
+
+fs <- list.files(file.path("data-raw", "GRIPC"), pattern="^.*_area.tif", full.names=TRUE)
+
+outdir = file.path("data", "GRIPC")
+if (dir.exists(outdir)) {
+    unlink(outdir, recursive=TRUE)
+}
+dir.create(outdir)
+
+for (i in 1:length(fs)) {
+    r <- raster(fs[i])
+    crs(r) <- "+proj=longlat +datum=WGS84 +ellps=WGS84"
+
+    f = paste0(basename(fs[i]), "_ll.tif")
+
+    writeRaster(r, file.path(outdir, f), format="GTiff", overwrite=TRUE)
+    ## r <- crop(r, extent(template))
+    ## ext <- alignExtent(extent(r), template)
+    ## r   <- setExtent(r, ext, keepres=TRUE)
     
-## }
+    ## aea.nm <- file.path(spatial_path, paste0(sub("^([^.]*).*", "\\1", basename(f)), "_India_aea.tif"))
+    ## ll.nm <- file.path(spatial_path, paste0(sub("^([^.]*).*", "\\1", basename(f)), "_India_ll.tif"))
 
-## ## ======================================
-## ## GRIPC
-## ## ======================================
+    ## writeRaster(r, ll.nm, format="GTiff", overwrite=TRUE, NAflag=-1)
 
-## fs <- list.files(file.path("data", "original", "GRIPC"), pattern="^.*_area.tif", full.names=TRUE)
-## for (i in 1:length(fs)) {
-##     f <- fs[i]
-##     r <- raster(f)
-##     crs(r) <- "+proj=longlat +datum=WGS84 +ellps=WGS84"
-##     r <- crop(r, extent(template))
-##     ext <- alignExtent(extent(r), template)
-##     r   <- setExtent(r, ext, keepres=TRUE)
-    
-##     aea.nm <- file.path(spatial_path, paste0(sub("^([^.]*).*", "\\1", basename(f)), "_India_aea.tif"))
-##     ll.nm <- file.path(spatial_path, paste0(sub("^([^.]*).*", "\\1", basename(f)), "_India_ll.tif"))
+    ## gdalwarp(srcfile=file.path(ll.nm),
+    ##          dstfile=file.path(aea.nm),
+    ##          t_srs=aea.crs,
+    ##          r="bilinear",
+    ##          overwrite=TRUE,
+    ##          verbose=TRUE,
+    ##          output_Raster=FALSE)
+}
 
-##     writeRaster(r, ll.nm, format="GTiff", overwrite=TRUE, NAflag=-1)
-
-##     gdalwarp(srcfile=file.path(ll.nm),
-##              dstfile=file.path(aea.nm),
-##              t_srs=aea.crs,
-##              r="bilinear",
-##              overwrite=TRUE,
-##              verbose=TRUE,
-##              output_Raster=FALSE)
-## }
