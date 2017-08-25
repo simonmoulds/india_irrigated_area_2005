@@ -157,5 +157,77 @@ for (i in 1:length(state_nms)) {
     }
 }
 
-saveRDS(x, "data/apy_indiastat_combined_data_qc.rds")
+## ======================================
+## rename columns
+## ======================================
+
+nms = names(x)
+
+nms[nms == "irr_rice-summer"] = "irr_rice-rabi"
+nms[nms == "irr_rice-winter"] = "irr_rice-kharif"
+nms[nms == "irr_rice-autumn"] = "irr_rice-autumn"
+
+nms[nms == "apy_rice-summer"] = "apy_rice-rabi"
+nms[nms == "apy_rice-winter"] = "apy_rice-kharif"
+nms[nms == "apy_rice-autumn"] = "apy_rice-autumn"
+
+names(x) = nms
+
+## get names of crops in each season
+kharif_crops = grep("-kharif$", names(x), value=TRUE) %>% gsub("^[a-z]{3}_", "", .) %>% gsub("-kharif$", "", .) %>% unique %>% sort
+
+rabi_crops = grep("-rabi$", names(x), value=TRUE) %>% gsub("^[a-z]{3}_", "", .) %>% gsub("-rabi$", "", .) %>% unique %>% sort
+
+summer_crops = grep("-summer$", names(x), value=TRUE) %>% gsub("^[a-z]{3}_", "", .) %>% gsub("-summer$", "", .) %>% unique %>% sort
+
+whole_year_crops = grep("-whole_year$", names(x), value=TRUE) %>% gsub("^[a-z]{3}_", "", .) %>% gsub("-whole_year$", "", .) %>% unique %>% sort
+
+## make column names for each crop and season combination
+whole_year_col_nms = paste0(c("irr_","rain_"), rep(whole_year_crops, each=2), "-whole_year")
+
+kharif_col_nms = paste0(c("irr_","rain_"), rep(kharif_crops, each=2), "-kharif")
+
+rabi_col_nms = paste0(c("irr_","rain_"), rep(rabi_crops, each=2), "-rabi")
+
+summer_col_nms = paste0(c("irr_","rain_"), rep(summer_crops, each=2), "-summer")
+
+col_nms = c(kharif_col_nms,
+            rabi_col_nms,
+            summer_col_nms,
+            whole_year_col_nms)
+
+y = as.data.frame(matrix(data=0, nrow=nrow(x), ncol=length(col_nms))) %>% setNames(col_nms)
+
+## column names without irr/rain prefix
+sub_col_nms = gsub("^([a-z]+)_(.*)-(.*)$", "\\2-\\3", col_nms) %>% unique
+
+for (i in 1:length(sub_col_nms)) {
+     
+    total_col_nm = paste0("apy_", sub_col_nms[i])
+    irr_col_nm = paste0("irr_", sub_col_nms[i])
+    rain_col_nm = paste0("rain_", sub_col_nms[i])
+
+    ## check total and irr column names exist in x
+    if (!all(c(total_col_nm, irr_col_nm) %in% names(x))) {
+        stop()
+    }
+    
+    total = x[[total_col_nm]]
+    irr = x[[irr_col_nm]]
+    rain = total - irr
+
+    irr[is.na(irr)] = 0
+    rain[is.na(rain)] = 0
+
+    irr[irr < 0] = 0
+    rain[rain < 0] = 0
+
+    y[[irr_col_nm]] = irr
+    y[[rain_col_nm]] = rain
+    
+}
+
+y = as_tibble(cbind(x[,c("State","ADM1_CODE","District","ADM2_CODE","Year")], y))
+
+saveRDS(y, "data/apy_indiastat_combined_data_qc.rds")
 

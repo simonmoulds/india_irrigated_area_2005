@@ -1,0 +1,279 @@
+<document>
+<category>milp</category>
+<solver>CPLEX</solver>
+<inputType>GAMS</inputType>
+<client>Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:54.0) Gecko/20100101 Firefox/54.0@144.173.225.124</client>
+<priority>short</priority>
+<email>sim.moulds@gmail.com</email>
+<model><![CDATA[$TITLE Matrix adjustment program
+
+*==============================================================================*
+*                                                                              *
+*           Except where otherwise noted, this work is licensed under          *
+*               http://creativecommons.org/licenses/by-nc-sa/3.0/              *
+*                                                                              *
+*                                                                              *
+*  You are free to share, to copy, distribute and transmit the work under      *
+*  the following conditions:                                                   *
+*                                                                              *
+*  - Attribution:         You must attribute the work to: Andre Lemelin        *                            *
+*  - Noncommercial:       You may not use this work for commercial purposes.   *
+*  - Share Alike:         If you alter, transform, or build upon this work,    *
+*                         you may distribute the resulting work only under     *
+*                         the same or similar license to this one.             *
+*                                                                              *
+*==============================================================================*
+
+* This program is based on the original GPCEMA program written by Andre
+* Lemelin (2010). Other than changing the input data (and the corresponding
+* sets, the program is the same). The original code is available at the
+* following url: https://www.pep-net.org/pep-standard-cge-models.
+
+* The program adjusts a matrix following the Junius and Oosterhaven (2003)
+* principle, but with an objective function defined as the true Kullback-Leibler
+* cross-entropy information-gain measure. The method is extended to deal with
+* zero row-sums, or column-sums, or both.
+
+* Reference:
+* LEMELIN, Andre (2010), "A GRAS variant solving for minimum information loss",
+* Economic Systems Research, 21(4), p. 399-408.
+
+*==============================================================================*
+
+
+SET I Row labels / CELL1, CELL2, CELL3, CELL4, CELL5, CELL6, CELL7, CELL8, CELL9, CELL10, CELL11, CELL12, CELL13, CELL14, CELL15, CELL16, CELL17, CELL18, CELL19, CELL20, CELL21, CELL22, CELL23, CELL24, CELL25, CELL26, CELL27, CELL28, CELL29, CELL30, CELL31, CELL32, CELL33, CELL34, CELL35, CELL36, CELL37, CELL38, CELL39, CELL40, CELL41, CELL42, CELL43, CELL44, CELL45, CELL46, CELL47, CELL48, CELL49, CELL50, CELL51, CELL52, CELL53, CELL54, CELL55, CELL56, CELL57, CELL58, CELL59, CELL60, CELL61, CELL62, CELL63, CELL64, CELL65, CELL66, CELL67, CELL68, CELL69, CELL70, CELL71, CELL72, CELL73, CELL74, CELL75, CELL76, CELL77, CELL78, CELL79, CELL80, CELL81, CELL82, CELL83, CELL84, CELL85, CELL86, CELL87, CELL88, CELL89, CELL90, CELL91, CELL92, CELL93, CELL94, CELL95, CELL96, CELL97, CELL98, CELL99, CELL100, CELL101, CELL102, CELL103, CELL104, CELL105, CELL106, CELL107, CELL108, TOTAL_AR /;
+
+SET I2(I) Row labels without CTOTS / CELL1, CELL2, CELL3, CELL4, CELL5, CELL6, CELL7, CELL8, CELL9, CELL10, CELL11, CELL12, CELL13, CELL14, CELL15, CELL16, CELL17, CELL18, CELL19, CELL20, CELL21, CELL22, CELL23, CELL24, CELL25, CELL26, CELL27, CELL28, CELL29, CELL30, CELL31, CELL32, CELL33, CELL34, CELL35, CELL36, CELL37, CELL38, CELL39, CELL40, CELL41, CELL42, CELL43, CELL44, CELL45, CELL46, CELL47, CELL48, CELL49, CELL50, CELL51, CELL52, CELL53, CELL54, CELL55, CELL56, CELL57, CELL58, CELL59, CELL60, CELL61, CELL62, CELL63, CELL64, CELL65, CELL66, CELL67, CELL68, CELL69, CELL70, CELL71, CELL72, CELL73, CELL74, CELL75, CELL76, CELL77, CELL78, CELL79, CELL80, CELL81, CELL82, CELL83, CELL84, CELL85, CELL86, CELL87, CELL88, CELL89, CELL90, CELL91, CELL92, CELL93, CELL94, CELL95, CELL96, CELL97, CELL98, CELL99, CELL100, CELL101, CELL102, CELL103, CELL104, CELL105, CELL106, CELL107, CELL108 /;
+
+SET J Column labels / CROP1, CROP2, CROP3, CROP4, CROP5, CROP6, CROP7, CROP8, CROP9, CROP10, CROP11, CROP12, CROP13, CROP14, CROP15, CROP16, CROP17, CROP18, CROP19, CROP20, CROP21, CROP22, CROP23, CROP24, CROP25, CROP26, CRPLND_AR, IRRI_AR /;
+SET J2(J) Column labels without RTOTS / CROP1, CROP2, CROP3, CROP4, CROP5, CROP6, CROP7, CROP8, CROP9, CROP10, CROP11, CROP12, CROP13, CROP14, CROP15, CROP16, CROP17, CROP18, CROP19, CROP20, CROP21, CROP22, CROP23, CROP24, CROP25, CROP26 /;
+
+SET J3(J2) Column labels of irrigated crops / CROP1, CROP3, CROP5, CROP7, CROP9, CROP11, CROP13, CROP15, CROP17, CROP19, CROP21, CROP23, CROP25 /;
+
+ALIAS (I2,I2J);
+ALIAS (J2,J2J);
+
+TABLE
+    DATA(I,J)
+                    CROP1        CROP2        CROP3        CROP4        CROP5        CROP6        CROP7        CROP8        CROP9       CROP10       CROP11       CROP12       CROP13       CROP14       CROP15       CROP16       CROP17       CROP18       CROP19       CROP20       CROP21       CROP22       CROP23       CROP24       CROP25       CROP26    CRPLND_AR      IRRI_AR 
+       CELL1            0            0            0            0            0            0            0            0            0            0            0       12.673            0            0       38.277            0            0            0            0            0            0            0            0            0            0            0     1716.968      1786.64 
+       CELL2            0            0            0            0            0            0            0            0            0            0            0       31.064            0            0       94.026            0            0            0            0            0            0            0            0            0            0            0     2153.354     2312.478 
+       CELL3            0            0            0            0            0            0            0            0            0            0            0       29.114            0            0       87.933            0            0            0            0            0            0            0            0            0            0            0        64.07       56.226 
+       CELL4            0            0            0            0            0            0            0            0            0            0            0       15.187            0            0       47.349            0            0            0            0            0            0            0            0            0            0            0       24.825       25.057 
+       CELL5            0            0            0            0            0            0            0            0            0            0            0        8.369            0            0       25.554            0            0            0            0            0            0            0            0            0            0            0     2039.911     2087.176 
+       CELL6            0            0            0            0            0            0            0            0            0            0            0       27.368            0            0       84.585            0            0            0            0            0            0            0            0            0            0            0     2127.195     1882.989 
+       CELL7            0            0            0            0            0            0            0            0            0            0            0        8.596            0            0       26.292            0            0            0            0            0            0            0            0            0            0            0     2605.582     2222.903 
+       CELL8            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0      110.312       11.523 
+       CELL9            0            0            0            0            0            0            0            0            0            0            0       21.339            0            0            0            0            0            0            0            0            0            0            0            0            0            0        66.15       56.335 
+      CELL10            0            0            0            0            0            0            0            0            0            0            0       28.596            0            0       87.394            0            0            0            0            0            0            0            0            0            0            0      2353.82     2339.708 
+      CELL11            0            0            0            0            0            0            0            0            0            0            0        4.061            0            0       12.536            0            0            0            0            0            0            0            0            0            0            0     1068.397     1091.955 
+      CELL12            0            0            0            0            0            0            0            0            0            0            0       16.163            0            0       49.924            0            0            0            0            0            0            0            0            0            0            0      3909.95     3999.641 
+      CELL13            0            0            0            0            0            0            0            0            0            0            0       15.726            0            0       48.034            0            0            0            0            0            0            0            0            0            0            0     2565.199     1601.487 
+      CELL14            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0     1382.626      204.554 
+      CELL15            0            0            0            0            0            0            0            0            0            0            0       22.712            0            0       71.565            0            0            0            0            0            0            0            0            0            0            0     1491.065      922.901 
+      CELL16            0            0            0            0            0            0            0            0            0            0            0       39.142            0            0      118.517            0            0            0            0            0            0            0            0            0            0            0      259.099      305.586 
+      CELL17            0            0            0            0            0            0            0            0            0            0            0       17.372            0            0       54.137            0            0            0            0            0            0            0            0            0            0            0      701.952      798.842 
+      CELL18            0            0            0            0            0            0            0            0            0            0            0       29.924            0            0       92.362            0            0            0            0            0            0            0            0            0            0            0     3450.162     3607.747 
+      CELL19            0            0            0            0            0            0            0            0            0            0            0       29.462            0            0       91.655            0            0            0            0            0            0            0            0            0            0            0     4705.954     4862.438 
+      CELL20            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0     1394.638      975.084 
+      CELL21            0            0            0            0            0            0            0            0            0            0            0       21.107            0            0        64.54            0            0            0            0            0            0            0            0            0            0            0      543.348      658.455 
+      CELL22            0            0            0            0            0            0            0            0            0            0            0       39.287            0            0            0            0            0            0            0            0            0            0            0            0            0            0      398.882      379.568 
+      CELL23            0            0            0            0            0            0            0            0            0            0            0       17.745            0            0       55.955            0            0            0            0            0            0            0            0            0            0            0      585.532      585.532 
+      CELL24            0            0            0            0            0            0            0            0            0            0            0       44.272            0            0      134.094            0            0            0            0            0            0            0            0            0            0            0     3993.142      4211.27 
+      CELL25            0            0            0            0            0            0            0            0            0            0            0       36.129            0            0      109.442            0            0            0            0            0            0            0            0            0            0            0     2575.123     2249.605 
+      CELL26            0            0            0            0            0            0            0            0            0            0            0       28.919            0            0       87.774            0            0            0            0            0            0            0            0            0            0            0     1204.201     1219.596 
+      CELL27            0            0            0            0            0            0            0            0            0            0            0       36.677            0            0      112.678            0            0            0            0            0            0            0            0            0            0            0      278.829      467.952 
+      CELL28            0            0            0            0            0            0            0            0            0            0            0       33.096            0            0      101.847            0            0            0            0            0            0            0            0            0            0            0     1283.244     1455.078 
+      CELL29            0            0            0            0            0            0            0            0            0            0            0       19.487            0            0            0            0            0            0            0            0            0            0            0            0            0            0      984.743     1092.732 
+      CELL30            0            0            0            0            0            0            0            0            0            0            0       15.897            0            0       49.443            0            0            0            0            0            0            0            0            0            0            0     3716.646      3805.77 
+      CELL31            0            0            0            0            0            0            0            0            0            0            0       33.775            0            0       105.15            0            0            0            0            0            0            0            0            0            0            0     2874.927       3051.7 
+      CELL32            0            0            0            0            0            0            0            0            0            0            0       24.543            0            0            0            0            0            0            0            0            0            0            0            0            0            0     1734.876      210.575 
+      CELL33            0            0            0            0            0            0            0            0            0            0            0       41.862            0            0      126.469            0            0            0            0            0            0            0            0            0            0            0     3015.562     1775.565 
+      CELL34            0            0            0            0            0            0            0            0            0            0            0       47.117            0            0      142.446            0            0            0            0            0            0            0            0            0            0            0     3795.972     2202.489 
+      CELL35            0            0            0            0            0            0            0            0            0            0            0       17.578            0            0            0            0            0            0            0            0            0            0            0            0            0            0      609.571      707.565 
+      CELL36            0            0            0            0            0            0            0            0            0            0            0       35.271            0            0            0            0            0            0            0            0            0            0            0            0            0            0      883.562     1066.814 
+      CELL37            0            0            0            0            0            0            0            0            0            0            0       28.404            0            0       86.198            0            0            0            0            0            0            0            0            0            0            0     3144.849     3294.391 
+      CELL38            0            0            0            0            0            0            0            0            0            0            0       37.554            0            0      116.089            0            0            0            0            0            0            0            0            0            0            0     4704.566     3436.227 
+      CELL39            0            0            0            0            0            0            0            0            0            0            0       41.318            0            0      127.947            0            0            0            0            0            0            0            0            0            0            0     3677.723     3521.331 
+      CELL40            0            0            0            0            0            0            0            0            0            0            0       29.178            0            0       90.563            0            0            0            0            0            0            0            0            0            0            0     2988.528     3144.278 
+      CELL41            0            0            0            0            0            0            0            0            0            0            0       37.393            0            0            0            0            0            0            0            0            0            0            0            0            0            0     2347.971     2106.431 
+      CELL42            0            0            0            0            0            0            0            0            0            0            0       20.377            0            0       63.322            0            0            0            0            0            0            0            0            0            0            0     3114.517     3226.893 
+      CELL43            0            0            0            0            0            0            0            0            0            0            0       36.579            0            0      112.837            0            0            0            0            0            0            0            0            0            0            0      4590.83     4778.685 
+      CELL44            0            0            0            0            0            0            0            0            0            0            0       16.513            0            0       51.386            0            0            0            0            0            0            0            0            0            0            0     2919.406     1908.139 
+      CELL45            0            0            0            0            0            0            0            0            0            0            0       52.451            0            0      160.286            0            0            0            0            0            0            0            0            0            0            0     3455.351     2541.929 
+      CELL46            0            0            0            0            0            0            0            0            0            0            0       30.635            0            0        92.62            0            0            0            0            0            0            0            0            0            0            0     5549.276      3771.07 
+      CELL47            0            0            0            0            0            0            0            0            0            0            0       51.611            0            0      156.102            0            0            0            0            0            0            0            0            0            0            0     4064.323     4311.306 
+      CELL48            0            0            0            0            0            0            0            0            0            0            0       54.662            0            0      165.797            0            0            0            0            0            0            0            0            0            0            0     2095.282     2352.409 
+      CELL49            0            0            0            0            0            0            0            0            0            0            0       21.222            0            0       66.426            0            0            0            0            0            0            0            0            0            0            0     1465.872     1583.755 
+      CELL50            0            0            0            0            0            0            0            0            0            0            0       44.545            0            0      137.823            0            0            0            0            0            0            0            0            0            0            0     3734.079     3957.102 
+      CELL51            0            0            0            0            0            0            0            0            0            0            0       43.901            0            0            0            0            0            0            0            0            0            0            0            0            0            0     2532.032     2752.707 
+      CELL52            0            0            0            0            0            0            0            0            0            0            0       41.004            0            0      127.324            0            0            0            0            0            0            0            0            0            0            0     2711.074     2918.778 
+      CELL53            0            0            0            0            0            0            0            0            0            0            0       38.388            0            0      119.199            0            0            0            0            0            0            0            0            0            0            0     2957.905      3154.51 
+      CELL54            0            0            0            0            0            0            0            0            0            0            0       36.747            0            0      114.162            0            0            0            0            0            0            0            0            0            0            0     5287.109     3566.775 
+      CELL55            0            0            0            0            0            0            0            0            0            0            0       38.792            0            0      120.735            0            0            0            0            0            0            0            0            0            0            0     4017.773     2742.573 
+      CELL56            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0       78.584        20.41 
+      CELL57            0            0            0            0            0            0            0            0            0            0            0       57.546            0            0       174.17            0            0            0            0            0            0            0            0            0            0            0     1510.793     1777.694 
+      CELL58            0            0            0            0            0            0            0            0            0            0            0       25.076            0            0       75.909            0            0            0            0            0            0            0            0            0            0            0      5011.42     5144.903 
+      CELL59            0            0            0            0            0            0            0            0            0            0            0       52.389            0            0      158.627            0            0            0            0            0            0            0            0            0            0            0     5881.133     6131.101 
+      CELL60            0            0            0            0            0            0            0            0            0            0            0        44.14            0            0      135.213            0            0            0            0            0            0            0            0            0            0            0     4105.054     4324.975 
+      CELL61            0            0            0            0            0            0            0            0            0            0            0       47.786            0            0      149.209            0            0            0            0            0            0            0            0            0            0            0     2221.058     2457.811 
+      CELL62            0            0            0            0            0            0            0            0            0            0            0       52.147            0            0      161.418            0            0            0            0            0            0            0            0            0            0            0     4602.526     2773.641 
+      CELL63            0            0            0            0            0            0            0            0            0            0            0       44.013            0            0      136.486            0            0            0            0            0            0            0            0            0            0            0     4374.393     4595.236 
+      CELL64            0            0            0            0            0            0            0            0            0            0            0       31.626            0            0       98.174            0            0            0            0            0            0            0            0            0            0            0     4618.929     4785.896 
+      CELL65            0            0            0            0            0            0            0            0            0            0            0       41.374            0            0      128.483            0            0            0            0            0            0            0            0            0            0            0     5560.315     4196.911 
+      CELL66            0            0            0            0            0            0            0            0            0            0            0       41.953            0            0      130.348            0            0            0            0            0            0            0            0            0            0            0     2267.661     2360.968 
+      CELL67            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0      724.626      242.889 
+      CELL68            0            0            0            0            0            0            0            0            0            0            0        57.29            0            0      173.686            0            0            0            0            0            0            0            0            0            0            0      576.733      753.158 
+      CELL69            0            0            0            0            0            0            0            0            0            0            0       60.626            0            0      183.779            0            0            0            0            0            0            0            0            0            0            0      1358.06     1635.779 
+      CELL70            0            0            0            0            0            0            0            0            0            0            0       61.115            0            0      187.306            0            0            0            0            0            0            0            0            0            0            0     5783.689      6066.87 
+      CELL71            0            0            0            0            0            0            0            0            0            0            0       47.593            0            0      145.911            0            0            0            0            0            0            0            0            0            0            0      6558.34     6792.139 
+      CELL72            0            0            0            0            0            0            0            0            0            0            0       24.096            0            0       73.879            0            0            0            0            0            0            0            0            0            0            0     5360.981      5401.45 
+      CELL73            0            0            0            0            0            0            0            0            0            0            0       57.713            0            0      177.208            0            0            0            0            0            0            0            0            0            0            0     6380.054      6651.42 
+      CELL74            0            0            0            0            0            0            0            0            0            0            0       44.145            0            0      136.727            0            0            0            0            0            0            0            0            0            0            0     5527.201     3224.009 
+      CELL75            0            0            0            0            0            0            0            0            0            0            0       54.345            0            0      168.604            0            0            0            0            0            0            0            0            0            0            0     5343.165      5548.08 
+      CELL76            0            0            0            0            0            0            0            0            0            0            0        50.68            0            0      157.359            0            0            0            0            0            0            0            0            0            0            0     5103.619     5350.798 
+      CELL77            0            0            0            0            0            0            0            0            0            0            0       46.768            0            0      144.205            0            0            0            0            0            0            0            0            0            0            0     3987.499     3218.485 
+      CELL78            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0      560.357       215.33 
+      CELL79            0            0            0            0            0            0            0            0            0            0            0       61.119            0            0      184.996            0            0            0            0            0            0            0            0            0            0            0       95.534       96.255 
+      CELL80            0            0            0            0            0            0            0            0            0            0            0       69.134            0            0      212.064            0            0            0            0            0            0            0            0            0            0            0     4828.065      4878.54 
+      CELL81            0            0            0            0            0            0            0            0            0            0            0       41.308            0            0      127.918            0            0            0            0            0            0            0            0            0            0            0     5408.227     4590.094 
+      CELL82            0            0            0            0            0            0            0            0            0            0            0       65.264            0            0            0            0            0            0            0            0            0            0            0            0            0            0     5355.878     5652.747 
+      CELL83            0            0            0            0            0            0            0            0            0            0            0       64.298            0            0      197.355            0            0            0            0            0            0            0            0            0            0            0     5144.549     5438.099 
+      CELL84            0            0            0            0            0            0            0            0            0            0            0       63.866            0            0       196.06            0            0            0            0            0            0            0            0            0            0            0     4675.732     4965.907 
+      CELL85            0            0            0            0            0            0            0            0            0            0            0       59.106            0            0      181.673            0            0            0            0            0            0            0            0            0            0            0     4695.772      4178.24 
+      CELL86            0            0            0            0            0            0            0            0            0            0            0       58.757            0            0      182.161            0            0            0            0            0            0            0            0            0            0            0     5155.891     4409.801 
+      CELL87            0            0            0            0            0            0            0            0            0            0            0       41.078            0            0      127.466            0            0            0            0            0            0            0            0            0            0            0     5155.869     4807.132 
+      CELL88            0            0            0            0            0            0            0            0            0            0            0       55.561            0            0      172.598            0            0            0            0            0            0            0            0            0            0            0     3978.838     2693.348 
+      CELL89            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0      1216.18      208.759 
+      CELL90            0            0            0            0            0            0            0            0            0            0            0       70.685            0            0      216.804            0            0            0            0            0            0            0            0            0            0            0      1989.04     2128.441 
+      CELL91            0            0            0            0            0            0            0            0            0            0            0        73.55            0            0            0            0            0            0            0            0            0            0            0            0            0            0     5336.411     5655.869 
+      CELL92            0            0            0            0            0            0            0            0            0            0            0       70.253            0            0            0            0            0            0            0            0            0            0            0            0            0            0     6945.845     7255.737 
+      CELL93            0            0            0            0            0            0            0            0            0            0            0       53.983            0            0       164.08            0            0            0            0            0            0            0            0            0            0            0     5923.176     6179.074 
+      CELL94            0            0            0            0            0            0            0            0            0            0            0       69.554            0            0       211.59            0            0            0            0            0            0            0            0            0            0            0     4116.878     4422.366 
+      CELL95            0            0            0            0            0            0            0            0            0            0            0       68.238            0            0      207.587            0            0            0            0            0            0            0            0            0            0            0     3798.353     3483.518 
+      CELL96            0            0            0            0            0            0            0            0            0            0            0       61.561            0            0      191.008            0            0            0            0            0            0            0            0            0            0            0     5443.204     3473.282 
+      CELL97            0            0            0            0            0            0            0            0            0            0            0       58.014            0            0      180.224            0            0            0            0            0            0            0            0            0            0            0     3698.157     2463.335 
+      CELL98            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0     1018.705       205.25 
+      CELL99            0            0            0            0            0            0            0            0            0            0            0       57.566            0            0      174.972            0            0            0            0            0            0            0            0            0            0            0     1556.066     1591.666 
+     CELL100            0            0            0            0            0            0            0            0            0            0            0       66.101            0            0            0            0            0            0            0            0            0            0            0            0            0            0     5609.353     5519.402 
+     CELL101            0            0            0            0            0            0            0            0            0            0            0       75.078            0            0      228.505            0            0            0            0            0            0            0            0            0            0            0      5610.71     5921.325 
+     CELL102            0            0            0            0            0            0            0            0            0            0            0       52.008            0            0      158.235            0            0            0            0            0            0            0            0            0            0            0      5814.95      6063.45 
+     CELL103            0            0            0            0            0            0            0            0            0            0            0       71.152            0            0       216.53            0            0            0            0            0            0            0            0            0            0            0     4679.967     3071.829 
+     CELL104            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0            0     2012.396     1125.186 
+     CELL105            0            0            0            0            0            0            0            0            0            0            0       71.261            0            0      216.753            0            0            0            0            0            0            0            0            0            0            0     3143.408     2825.263 
+     CELL106            0            0            0            0            0            0            0            0            0            0            0       77.406            0            0      235.618            0            0            0            0            0            0            0            0            0            0            0     5009.282     4319.796 
+     CELL107            0            0            0            0            0            0            0            0            0            0            0       64.121            0            0      195.137            0            0            0            0            0            0            0            0            0            0            0     2429.169     1591.246 
+     CELL108            0            0            0            0            0            0            0            0            0            0            0       69.652            0            0      209.529            0            0            0            0            0            0            0            0            0            0            0       95.774       48.068 
+    TOTAL_AR            0            0            0            0            0            0            0            0            0            0            0         4203            0            0    11314.358            0            0            0            0            0            0            0            0            0            0            0 
+;
+
+*==============================================================================*
+*------------------------------- List of parameters----------------------------*
+
+PARAMETER
+  OLDMAT(I,J)        A priori (non adjusted) distribution matrix
+  NEWMAT(I,J)        Adjusted matrix
+  ZSOL(I2,J2)        Solution values of ZED
+  EPSILON            Lower bound on ZED to prevent log(0) and divisions by zero
+
+*==============================================================================*
+*-------------------------------- Variable names ------------------------------*
+
+VARIABLE
+  ZED(I2,J2)    Correction factors to be applied to the elements of OLDMAT
+  OBJ           Objective function
+;
+
+* It is not sufficient to declare ZED as a positive variable. It must have a
+* lower bound, defined below as EPSILON
+
+*==============================================================================*
+*------------------------------- Value assignments ----------------------------*
+
+  OLDMAT(I,J) = DATA(I,J) ;
+
+*  Display "INITIAL VALUES:", OLDMAT ;
+
+  EPSILON=0.000001;
+
+*==============================================================================*
+*---------------------------------- Equations ---------------------------------*
+
+EQUATIONS
+  EQROW(I2)    Constraint on the adjusted row totals
+  EQIRRROW(I2) Constraint on adjusted irrigated row totals
+  EQCOL(J2)    Constraint on the adjusted column totals
+  EQOBJ        Objective function
+  ;
+
+  EQROW(I2)..    SUM(J2,OLDMAT(I2,J2)*ZED(I2,J2))
+                    =L= OLDMAT(I2,"CRPLND_AR") ;
+                    
+  EQIRRROW(I2).. SUM(J3,OLDMAT(I2,J3)*ZED(I2,J3))
+                    =L= OLDMAT(I2,"IRRI_AR");
+                    
+  EQCOL(J2)..    SUM(I2,OLDMAT(I2,J2)*ZED(I2,J2))
+                    =E= OLDMAT("TOTAL_AR",J2) ;
+
+* The objective function is defined below:
+* the specification minimizes cross-entropy (Kullback-Leibler measure),
+* that is, information gain.
+
+   EQOBJ..       OBJ =E=
+                  SUM((I2,J2),ABS(OLDMAT(I2,J2))*ZED(I2,J2)*log(ZED(I2,J2)))
+                  / SUM((I2,J2),ABS(OLDMAT(I2,J2))*ZED(I2,J2))
+                  -log(SUM((I2,J2),ABS(OLDMAT(I2,J2))*ZED(I2,J2)))
+                  +log(SUM((I2,J2),ABS(OLDMAT(I2,J2))));
+
+*==============================================================================*
+*---------------------------- Model definition --------------------------------*
+MODEL ADJUS /ALL/;
+
+*==============================================================================*
+*------------------------- Initial value assignment ---------------------------*
+
+* The lower bound assigned to ZED guarantees that there will be no log(0)
+  ZED.LO(I2,J2) = EPSILON ;
+
+* Initial value of ZED is set to the ratio of the sum of target marginal row
+* totals to the sum of old matrix elements.
+  ZED.L(I2,J2) = SUM(I2J,OLDMAT(I2J,"CRPLND_AR")) / SUM((I2J,J2J),OLDMAT(I2J,J2J));
+  DISPLAY ZED.L ;
+
+*==============================================================================*
+*--------------------------Solution of the problem ----------------------------*
+
+OPTION ITERLIM=100000;
+* The following option limits to 5 the number of decimals
+* in DISPLAY statement output only.
+OPTION DECIMALS=5;
+* It is preferable to use the solver CONOPT, which has a greater precision
+* than MINOS5
+OPTION NLP=CONOPT3;
+SOLVE ADJUS USING NLP MINIMIZING OBJ;
+
+*==============================================================================*
+*                                  RESULTS
+*---------------------- Calculation of adjusted matrix ------------------------*
+
+  NEWMAT(I2,J2) = OLDMAT(I2,J2)*ZED.L(I2,J2) ;
+
+* It is convenient to include row and column totals in NEWMAT
+  NEWMAT("TOTAL_AR",J2) = SUM(I2,NEWMAT(I2,J2));
+  NEWMAT(I2,"CRPLND_AR") = SUM(J2,NEWMAT(I2,J2));
+  NEWMAT(I2,"IRRI_AR") = SUM(J3,NEWMAT(I2,J3));
+
+  ZSOL(I2,J2)   = ZED.L(I2,J2) ;
+
+  Acronym zero;
+  NEWMAT(I,J)$(Not NEWMAT(I,J)) = zero;
+  Display "&START NEW MATRIX";
+  DISPLAY NEWMAT;
+  DISPLAY "&END NEW MATRIX";
+*  Display ZSOL;
+
+]]></model>
+<options><![CDATA[]]></options>
+<gdx><![CDATA[]]></gdx>
+<comments><![CDATA[]]></comments>
+</document>

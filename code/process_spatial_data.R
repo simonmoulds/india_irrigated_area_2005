@@ -256,11 +256,24 @@ system("unzip -o data-raw/MapSPAM/spam2005V3r1_global_harv_area.geotiff.zip -d d
 ## }
 
 ## ======================================
-## FAO crop suitability
+## Market access
 ## ======================================
 
-## GAEZ crop suitability: use high input
-fs <- list.files(file.path("data-raw", "GAEZ"), pattern="^res03crav6190[a-z]{8}_package.zip", full.names=TRUE)
+f = file.path("data-raw", "marketinfluence_tcm234-229510.zip")
+outdir = file.path("data", "market-influence")
+if (dir.exists(outdir)) {
+    unlink(outdir, recursive=TRUE)
+}
+dir.create(outdir)
+unzip(f, exdir=outdir)
+
+## ======================================
+## FAO GAEZ
+## ======================================
+
+## 1. crop suitability (class)
+
+fs <- list.files(file.path("data-raw","GAEZ"), pattern="^res03crav6190[a-z]{1}sc[a-z]{5}_package.zip", full.names=TRUE)
 
 outdir = file.path("data", "GAEZ")
 if (dir.exists(outdir)) {
@@ -277,65 +290,40 @@ for (i in 1:length(fs)) {
     f <- list.files(d, pattern="^[^.]*.tif", full.names=TRUE)
     if (length(f) != 1) {
         stop()
-    }
-    
-    ## r <- raster(f)
-    ## ## r <- crop(r, extent(template))
-    ## ## ext <- alignExtent(extent(r), template)
-    ## ## r   <- setExtent(r, ext, keepres=TRUE)
-
-    ## ## r[r == -1] <- 0  ## set all NA values to 0
-    ## r[r == -1] <- NA
-
-    ## aea.nm <- file.path(spatial_path, paste0(sub("^([^.]*).*", "\\1", basename(f)), "_India_aea.tif"))
-    ## ll.nm <- file.path(spatial_path, paste0(sub("^([^.]*).*", "\\1", basename(f)), "_India_ll.tif"))
-
-    ## writeRaster(r, ll.nm, format="GTiff", overwrite=TRUE, NAflag=-1)
-
-    ## gdalwarp(srcfile=file.path(ll.nm),
-    ##          dstfile=file.path(aea.nm),
-    ##          t_srs=aea.crs,
-    ##          r="bilinear",
-    ##          overwrite=TRUE,
-    ##          verbose=TRUE,
-    ##          output_Raster=FALSE)    
-
+    }    
 }
 
-## ======================================
-## GRIPC
-## ======================================
+## 2. potential yield
 
-fs <- list.files(file.path("data-raw", "GRIPC"), pattern="^.*_area.tif", full.names=TRUE)
-
-outdir = file.path("data", "GRIPC")
-if (dir.exists(outdir)) {
-    unlink(outdir, recursive=TRUE)
-}
-dir.create(outdir)
+fs = list.files(file.path("data-raw", "GAEZ"), pattern="^res02crav6190[a-z]{5}[0-9]{3}[a-z]{4}_package.zip", full.names=TRUE)
 
 for (i in 1:length(fs)) {
-    r <- raster(fs[i])
-    crs(r) <- "+proj=longlat +datum=WGS84 +ellps=WGS84"
+    f <- fs[i]; print(f)
+    d <- file.path(outdir, sub("^([^.]*).*", "\\1", basename(f)))
+    unzip(f, exdir=d)
 
-    f = paste0(basename(fs[i]), "_ll.tif")
-
-    writeRaster(r, file.path(outdir, f), format="GTiff", overwrite=TRUE)
-    ## r <- crop(r, extent(template))
-    ## ext <- alignExtent(extent(r), template)
-    ## r   <- setExtent(r, ext, keepres=TRUE)
-    
-    ## aea.nm <- file.path(spatial_path, paste0(sub("^([^.]*).*", "\\1", basename(f)), "_India_aea.tif"))
-    ## ll.nm <- file.path(spatial_path, paste0(sub("^([^.]*).*", "\\1", basename(f)), "_India_ll.tif"))
-
-    ## writeRaster(r, ll.nm, format="GTiff", overwrite=TRUE, NAflag=-1)
-
-    ## gdalwarp(srcfile=file.path(ll.nm),
-    ##          dstfile=file.path(aea.nm),
-    ##          t_srs=aea.crs,
-    ##          r="bilinear",
-    ##          overwrite=TRUE,
-    ##          verbose=TRUE,
-    ##          output_Raster=FALSE)
+    f <- list.files(d, pattern="^[^.]*.tif", full.names=TRUE)
+    if (length(f) != 1) {
+        stop()
+    }
 }
+
+## ## ======================================
+## ## GRIPC
+## ## ======================================
+
+## fs <- list.files(file.path("data-raw", "GRIPC"), pattern="^.*_area.tif", full.names=TRUE)
+
+## outdir = file.path("data", "GRIPC")
+## if (dir.exists(outdir)) {
+##     unlink(outdir, recursive=TRUE)
+## }
+## dir.create(outdir)
+
+## for (i in 1:length(fs)) {
+##     r <- raster(fs[i])
+##     crs(r) <- "+proj=longlat +datum=WGS84 +ellps=WGS84"
+##     f = paste0(basename(fs[i]), "_ll.tif")
+##     writeRaster(r, file.path(outdir, f), format="GTiff", overwrite=TRUE)
+## }
 

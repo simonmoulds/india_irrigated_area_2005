@@ -1,68 +1,5 @@
-$TITLE Matrix adjustment program
-
 *==============================================================================*
-*                                                                              *
-*           Except where otherwise noted, this work is licensed under          *
-*               http://creativecommons.org/licenses/by-nc-sa/3.0/              *
-*                                                                              *
-*                                                                              *
-*  You are free to share, to copy, distribute and transmit the work under      *
-*  the following conditions:                                                   *
-*                                                                              *
-*  - Attribution:         You must attribute the work to: Andre Lemelin        *                            *
-*  - Noncommercial:       You may not use this work for commercial purposes.   *
-*  - Share Alike:         If you alter, transform, or build upon this work,    *
-*                         you may distribute the resulting work only under     *
-*                         the same or similar license to this one.             *
-*                                                                              *
-*==============================================================================*
-
-* This program is based on the original GPCEMA program written by Andre
-* Lemelin (2010). Other than changing the input data (and the corresponding
-* sets, the program is the same). The original code is available at the
-* following url: https://www.pep-net.org/pep-standard-cge-models.
-
-* The program adjusts a matrix following the Junius and Oosterhaven (2003)
-* principle, but with an objective function defined as the true Kullback-Leibler
-* cross-entropy information-gain measure. The method is extended to deal with
-* zero row-sums, or column-sums, or both.
-
-* Reference:
-* LEMELIN, Andre (2010), "A GRAS variant solving for minimum information loss",
-* Economic Systems Research, 21(4), p. 399-408.
-
-*===========================================================================*
-*-------------------------------Set definition------------------------------*
-
-SET I Row labels / ROW1, ROW2, ROW3, ROW4, ROW5, CTOTS /;
-
-SET I2(I) Row labels without CTOTS / ROW1, ROW2, ROW3, ROW4, ROW5 /;
-
-SET J Column labels / COL1, COL2, COL3, COL4, RTOTS /;
-
-SET J2(J) Column labels without RTOTS / COL1, COL2, COL3, COL4 /;
-
-ALIAS (I2,I2J);
-ALIAS (J2,J2J);
-
-*===========================================================================*
-*-------------------------------- Problem data -----------------------------*
-
-TABLE
-    DATA(I,J)
-             COL1          COL2       COL3          COL4        RTOTS
-ROW1         0             38.9344    23.3607       23.3607       110
-ROW2         31.1475       0          11.6803       11.6803       60
-ROW3         18.6885       11.6803    0             7.0082        40
-ROW4         6.2295        3.8934     2.3361        0             15
-ROW5         2.5           2.0        5             0             15
-CTOTS        80            50         30            30
-;
-
-Display DATA;
-
-*===========================================================================*
-*---------------------------List of parameters------------------------------*
+*------------------------------- List of parameters----------------------------*
 
 PARAMETER
   OLDMAT(I,J)        A priori (non adjusted) distribution matrix
@@ -70,8 +7,8 @@ PARAMETER
   ZSOL(I2,J2)        Solution values of ZED
   EPSILON            Lower bound on ZED to prevent log(0) and divisions by zero
 
-*============================================================================*
-*---------------------------- Variable names --------------------------------*
+*==============================================================================*
+*-------------------------------- Variable names ------------------------------*
 
 VARIABLE
   ZED(I2,J2)    Correction factors to be applied to the elements of OLDMAT
@@ -81,28 +18,33 @@ VARIABLE
 * It is not sufficient to declare ZED as a positive variable. It must have a
 * lower bound, defined below as EPSILON
 
-*============================================================================*
-*------------------------------ Value assignments ---------------------------*
+*==============================================================================*
+*------------------------------- Value assignments ----------------------------*
 
   OLDMAT(I,J) = DATA(I,J) ;
 
-  Display "INITIAL VALUES:", OLDMAT ;
+*  Display "INITIAL VALUES:", OLDMAT ;
 
   EPSILON=0.000001;
 
-*============================================================================*
-*--------------------------------- Equations --------------------------------*
+*==============================================================================*
+*---------------------------------- Equations ---------------------------------*
 
 EQUATIONS
   EQROW(I2)    Constraint on the adjusted row totals
+  EQIRRROW(I2) Constraint on adjusted irrigated row totals
   EQCOL(J2)    Constraint on the adjusted column totals
   EQOBJ        Objective function
   ;
 
   EQROW(I2)..    SUM(J2,OLDMAT(I2,J2)*ZED(I2,J2))
-                    =L= OLDMAT(I2,"RTOTS") ;
-  EQCOL(J2)..   SUM(I2,OLDMAT(I2,J2)*ZED(I2,J2))
-                 =E= OLDMAT("CTOTS",J2) ;
+                    =L= OLDMAT(I2,"CRPLND_AR") ;
+                    
+  EQIRRROW(I2).. SUM(J3,OLDMAT(I2,J3)*ZED(I2,J3))
+                    =L= OLDMAT(I2,"IRRI_AR");
+                    
+  EQCOL(J2)..    SUM(I2,OLDMAT(I2,J2)*ZED(I2,J2))
+                    =E= OLDMAT("TOTAL_AR",J2) ;
 
 * The objective function is defined below:
 * the specification minimizes cross-entropy (Kullback-Leibler measure),
@@ -114,23 +56,23 @@ EQUATIONS
                   -log(SUM((I2,J2),ABS(OLDMAT(I2,J2))*ZED(I2,J2)))
                   +log(SUM((I2,J2),ABS(OLDMAT(I2,J2))));
 
-*===========================================================================*
-*-------------------------------- Model definition -------------------------*
+*==============================================================================*
+*---------------------------- Model definition --------------------------------*
 MODEL ADJUS /ALL/;
 
-*============================================================================*
-*------------------------ Initial value assignment --------------------------*
+*==============================================================================*
+*------------------------- Initial value assignment ---------------------------*
 
 * The lower bound assigned to ZED guarantees that there will be no log(0)
   ZED.LO(I2,J2) = EPSILON ;
 
 * Initial value of ZED is set to the ratio of the sum of target marginal row
 * totals to the sum of old matrix elements.
-  ZED.L(I2,J2) = SUM(I2J,OLDMAT(I2J,"RTOTS")) / SUM((I2J,J2J),OLDMAT(I2J,J2J));
+  ZED.L(I2,J2) = SUM(I2J,OLDMAT(I2J,"CRPLND_AR")) / SUM((I2J,J2J),OLDMAT(I2J,J2J));
   DISPLAY ZED.L ;
 
-*============================================================================*
-*------------------------Solution of the problem ----------------------------*
+*==============================================================================*
+*--------------------------Solution of the problem ----------------------------*
 
 OPTION ITERLIM=100000;
 * The following option limits to 5 the number of decimals
@@ -141,15 +83,22 @@ OPTION DECIMALS=5;
 OPTION NLP=CONOPT3;
 SOLVE ADJUS USING NLP MINIMIZING OBJ;
 
-*============================================================================*
-*                                RESULTS
-*-------------------- Calculation of adjusted matrix ------------------------*
+*==============================================================================*
+*                                  RESULTS
+*---------------------- Calculation of adjusted matrix ------------------------*
 
   NEWMAT(I2,J2) = OLDMAT(I2,J2)*ZED.L(I2,J2) ;
 
 * It is convenient to include row and column totals in NEWMAT
-  NEWMAT("CTOTS",J2) = SUM(I2,NEWMAT(I2,J2));
-  NEWMAT(I2,"RTOTS") = SUM(J2,NEWMAT(I2,J2));
+  NEWMAT("TOTAL_AR",J2) = SUM(I2,NEWMAT(I2,J2));
+  NEWMAT(I2,"CRPLND_AR") = SUM(J2,NEWMAT(I2,J2));
+  NEWMAT(I2,"IRRI_AR") = SUM(J3,NEWMAT(I2,J3));
 
   ZSOL(I2,J2)   = ZED.L(I2,J2) ;
-  DISPLAY NEWMAT, ZSOL;
+
+  Acronym zero;
+  NEWMAT(I,J)$(Not NEWMAT(I,J)) = zero;
+  Display "&START NEW MATRIX";
+  DISPLAY NEWMAT;
+  DISPLAY "&END NEW MATRIX";
+*  Display ZSOL;
