@@ -30,9 +30,9 @@ states = x[["State"]] %>% unique
 years = 2000
 states = "Andhra Pradesh"
 
-outdir = file.path("data", "gams")
-if (!dir.exists(outdir)) {
-    dir.create(outdir)
+dir = file.path("data", "gams")
+if (!dir.exists(dir)) {
+    dir.create(dir)
 }
 
 ## write input files
@@ -102,11 +102,19 @@ for (i in 1:length(years)) {
                     n_pot_yield = length(which(pot_yield > 0))
 
                     if (n_suit == 0) {
-                        suit = rep(1, n_cell)
+                        if (is_irrigated) {
+                            suit[irri_area > 0 & cropland_area > 0] = 1
+                        } else {
+                            suit[cropland_area > 0] = 1
+                        }
                     }
 
                     if (n_pot_yield == 0) {
-                        pot_yield = rep(1, n_cell)
+                        if (is_irrigated) {
+                            pot_yield[irri_area > 0 & cropland_area > 0] = 1
+                        } else {
+                            pot_yield[cropland_area > 0] = 1
+                        }
                     }
 
                     price = 1
@@ -146,9 +154,10 @@ for (i in 1:length(years)) {
 
             ## include crops grown over the whole year in the optimisation
             kharif_dist_tbl %<>% cbind(whole_year_dist_tbl)
-
+            
             flag = TRUE
-            kharif_dist_tbl2 = try(allocate_fun(kharif_dist_tbl, dists[k], years[i], season="kharif", cropland_area=cropland_area, irri_area=irri_area, outdir="data/gams"))
+            kharif_dist_tbl2 = try(allocate_fun(kharif_dist_tbl, dists[k], years[i], season="kharif", cropland_area=cropland_area, irri_area=irri_area, dir=dir))
+
             if (!isTRUE(all.equal(dim(kharif_dist_tbl), dim(kharif_dist_tbl2)))) {
                 flag = FALSE
             }
@@ -185,7 +194,7 @@ for (i in 1:length(years)) {
                                                   season="rabi",
                                                   cropland_area=cropland_area2,
                                                   irri_area=irri_area2,
-                                                  outdir="data/gams"))
+                                                  dir=dir))
                 if (!isTRUE(all.equal(dim(rabi_dist_tbl), dim(rabi_dist_tbl2)))) {
                     flag = FALSE
                 }
@@ -200,7 +209,7 @@ for (i in 1:length(years)) {
                                                   season="summer",
                                                   cropland_area=cropland_area2,
                                                   irri_area=irri_area2,
-                                                  outdir="data/gams"))
+                                                  dir=dir))
                 if (inherits(summer_dist_tbl2, "try-error")) {
                     warning()
                     flag = FALSE
@@ -209,10 +218,10 @@ for (i in 1:length(years)) {
 
             if (flag) {
 
-                saveRDS(whole_year_dist_tbl2, file.path(outdir, paste0("gams_output_", dists[k], "_", years[i], "_whole_year.rds")))
-                saveRDS(kharif_dist_tbl2, file.path(outdir, paste0("gams_output_", dists[k], "_", years[i], "_kharif.rds")))
-                saveRDS(rabi_dist_tbl2, file.path(outdir, paste0("gams_output_", dists[k], "_", years[i], "_rabi.rds")))
-                saveRDS(summer_dist_tbl2, file.path(outdir, paste0("gams_output_", dists[k], "_", years[i], "_summer.rds")))
+                saveRDS(whole_year_dist_tbl2, file.path(dir, paste0("gams_output_", dists[k], "_", years[i], "_whole_year.rds")))
+                saveRDS(kharif_dist_tbl2, file.path(dir, paste0("gams_output_", dists[k], "_", years[i], "_kharif.rds")))
+                saveRDS(rabi_dist_tbl2, file.path(dir, paste0("gams_output_", dists[k], "_", years[i], "_rabi.rds")))
+                saveRDS(summer_dist_tbl2, file.path(dir, paste0("gams_output_", dists[k], "_", years[i], "_summer.rds")))
                 
             } else {
                 warning()

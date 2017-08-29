@@ -98,6 +98,27 @@ any_server_errors = function(x, ...) {
     isTRUE(attr(x, "status") == 1)
 }
 
+adjust_totals = function(x, cropland_area, irri_area, ...) {
+    cropland_avail = sum(cropland_area)
+    irrigated_avail = sum(irri_area)
+
+    irri_ix = grep("^irr_", names(x))
+    cropland_dmd = sum(colSums(x))
+    irrigated_dmd = sum(colSums(x)[irri_ix])
+
+    if (cropland_dmd > cropland_avail) {
+        sf = cropland_avail / cropland_dmd
+        x = x * sf
+    }
+
+    if (irrigated_dmd > irrigated_avail) {
+        sf = irrigated_avail / irrigated_dmd
+        x[,irri_ix] = x[,irri_ix] * sf
+    }
+
+    x
+}
+
 read_gams_output = function(x, ...) {
 
     ## restrict file to output
@@ -147,11 +168,14 @@ read_gams_output = function(x, ...) {
     dat
 }
 
-allocate_fun = function(x, dist, year, season, cropland_area, irri_area, outdir, ...) {
-    
-    if (colSums(x) %>% sum %>% `>`(0)) {
+allocate_fun = function(x, dist, year, season, cropland_area, irri_area, dir, write_output=TRUE, ...) {
+    ## Function to perform allocation
 
-        fn = file.path(outdir, paste0("gams_input_", dist, "_", year, "_", season, ".xml"))
+    x = adjust_totals(x, cropland_area, irri_area)
+    
+    if (sum(colSums(x)) > 0) {
+
+        fn = file.path(dir, paste0("gams_input_", dist, "_", year, "_", season, ".xml"))
         write_gams_input(x, cropland_area, irri_area, fn)
 
         ## now execute script and retrieve output
@@ -161,7 +185,14 @@ allocate_fun = function(x, dist, year, season, cropland_area, irri_area, outdir,
         if (any_user_errors(res) || any_runtime_errors(res) || any_server_errors(res)) {
             stop("Allocation did not run properly")
         } else {
-            x2 = read_gams_output(res) %>% setNames(names(x))
+            x2 = read_gams_output(res)
+            names(x2) = names(x)
+        }
+
+        if (write_output) {
+            con = file(file.path(dir, paste0("gams_output_", dist, "_", year, "_", season, ".txt")))
+            writeLines(res, con)
+            close(con)
         }
 
     } else {

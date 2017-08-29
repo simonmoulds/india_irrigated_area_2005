@@ -1,0 +1,482 @@
+Job number = 5552079
+Job password = IAXtcips
+Executed on prod-exec-1.neos-server.org
+GAMS 24.8.5  r61358 Released May 10, 2017 LEX-LEG x86 64bit/Linux 08/29/17 03:20:58 Page 1
+Matrix adjustment program
+C o m p i l a t i o n
+
+
+
+
+COMPILATION TIME     =        0.000 SECONDS      3 MB  24.8.5 r61358 LEX-LEG
+GAMS 24.8.5  r61358 Released May 10, 2017 LEX-LEG x86 64bit/Linux 08/29/17 03:20:58 Page 2
+Matrix adjustment program
+E x e c u t i o n
+
+
+----    138 VARIABLE ZED.L  Correction factors to be applied to the elements of
+                            OLDMAT
+
+            CROP1       CROP2       CROP3       CROP4       CROP5       CROP6
+
+CELL1     269.650     269.650     269.650     269.650     269.650     269.650
+CELL2     269.650     269.650     269.650     269.650     269.650     269.650
+CELL3     269.650     269.650     269.650     269.650     269.650     269.650
+CELL4     269.650     269.650     269.650     269.650     269.650     269.650
+CELL5     269.650     269.650     269.650     269.650     269.650     269.650
+CELL6     269.650     269.650     269.650     269.650     269.650     269.650
+CELL7     269.650     269.650     269.650     269.650     269.650     269.650
+CELL8     269.650     269.650     269.650     269.650     269.650     269.650
+
+    +       CROP7       CROP8       CROP9      CROP10      CROP11      CROP12
+
+CELL1     269.650     269.650     269.650     269.650     269.650     269.650
+CELL2     269.650     269.650     269.650     269.650     269.650     269.650
+CELL3     269.650     269.650     269.650     269.650     269.650     269.650
+CELL4     269.650     269.650     269.650     269.650     269.650     269.650
+CELL5     269.650     269.650     269.650     269.650     269.650     269.650
+CELL6     269.650     269.650     269.650     269.650     269.650     269.650
+CELL7     269.650     269.650     269.650     269.650     269.650     269.650
+CELL8     269.650     269.650     269.650     269.650     269.650     269.650
+
+    +      CROP13      CROP14      CROP15      CROP16      CROP17      CROP18
+
+CELL1     269.650     269.650     269.650     269.650     269.650     269.650
+CELL2     269.650     269.650     269.650     269.650     269.650     269.650
+CELL3     269.650     269.650     269.650     269.650     269.650     269.650
+CELL4     269.650     269.650     269.650     269.650     269.650     269.650
+CELL5     269.650     269.650     269.650     269.650     269.650     269.650
+CELL6     269.650     269.650     269.650     269.650     269.650     269.650
+CELL7     269.650     269.650     269.650     269.650     269.650     269.650
+CELL8     269.650     269.650     269.650     269.650     269.650     269.650
+
+    +      CROP19      CROP20      CROP21      CROP22      CROP23      CROP24
+
+CELL1     269.650     269.650     269.650     269.650     269.650     269.650
+CELL2     269.650     269.650     269.650     269.650     269.650     269.650
+CELL3     269.650     269.650     269.650     269.650     269.650     269.650
+CELL4     269.650     269.650     269.650     269.650     269.650     269.650
+CELL5     269.650     269.650     269.650     269.650     269.650     269.650
+CELL6     269.650     269.650     269.650     269.650     269.650     269.650
+CELL7     269.650     269.650     269.650     269.650     269.650     269.650
+CELL8     269.650     269.650     269.650     269.650     269.650     269.650
+
+    +      CROP25      CROP26      CROP27      CROP28      CROP29      CROP30
+
+CELL1     269.650     269.650     269.650     269.650     269.650     269.650
+CELL2     269.650     269.650     269.650     269.650     269.650     269.650
+CELL3     269.650     269.650     269.650     269.650     269.650     269.650
+CELL4     269.650     269.650     269.650     269.650     269.650     269.650
+CELL5     269.650     269.650     269.650     269.650     269.650     269.650
+CELL6     269.650     269.650     269.650     269.650     269.650     269.650
+CELL7     269.650     269.650     269.650     269.650     269.650     269.650
+CELL8     269.650     269.650     269.650     269.650     269.650     269.650
+
+    +      CROP31      CROP32      CROP33      CROP34      CROP35      CROP36
+
+CELL1     269.650     269.650     269.650     269.650     269.650     269.650
+CELL2     269.650     269.650     269.650     269.650     269.650     269.650
+CELL3     269.650     269.650     269.650     269.650     269.650     269.650
+CELL4     269.650     269.650     269.650     269.650     269.650     269.650
+CELL5     269.650     269.650     269.650     269.650     269.650     269.650
+CELL6     269.650     269.650     269.650     269.650     269.650     269.650
+CELL7     269.650     269.650     269.650     269.650     269.650     269.650
+CELL8     269.650     269.650     269.650     269.650     269.650     269.650
+
+    +      CROP37      CROP38      CROP39      CROP40      CROP41      CROP42
+
+CELL1     269.650     269.650     269.650     269.650     269.650     269.650
+CELL2     269.650     269.650     269.650     269.650     269.650     269.650
+CELL3     269.650     269.650     269.650     269.650     269.650     269.650
+CELL4     269.650     269.650     269.650     269.650     269.650     269.650
+CELL5     269.650     269.650     269.650     269.650     269.650     269.650
+CELL6     269.650     269.650     269.650     269.650     269.650     269.650
+CELL7     269.650     269.650     269.650     269.650     269.650     269.650
+CELL8     269.650     269.650     269.650     269.650     269.650     269.650
+
+    +      CROP43      CROP44      CROP45      CROP46      CROP47      CROP48
+
+CELL1     269.650     269.650     269.650     269.650     269.650     269.650
+CELL2     269.650     269.650     269.650     269.650     269.650     269.650
+CELL3     269.650     269.650     269.650     269.650     269.650     269.650
+CELL4     269.650     269.650     269.650     269.650     269.650     269.650
+CELL5     269.650     269.650     269.650     269.650     269.650     269.650
+CELL6     269.650     269.650     269.650     269.650     269.650     269.650
+CELL7     269.650     269.650     269.650     269.650     269.650     269.650
+CELL8     269.650     269.650     269.650     269.650     269.650     269.650
+
+    +      CROP49      CROP50      CROP51      CROP52      CROP53      CROP54
+
+CELL1     269.650     269.650     269.650     269.650     269.650     269.650
+CELL2     269.650     269.650     269.650     269.650     269.650     269.650
+CELL3     269.650     269.650     269.650     269.650     269.650     269.650
+CELL4     269.650     269.650     269.650     269.650     269.650     269.650
+CELL5     269.650     269.650     269.650     269.650     269.650     269.650
+CELL6     269.650     269.650     269.650     269.650     269.650     269.650
+CELL7     269.650     269.650     269.650     269.650     269.650     269.650
+CELL8     269.650     269.650     269.650     269.650     269.650     269.650
+
+    +      CROP55      CROP56      CROP57      CROP58      CROP59      CROP60
+
+CELL1     269.650     269.650     269.650     269.650     269.650     269.650
+CELL2     269.650     269.650     269.650     269.650     269.650     269.650
+CELL3     269.650     269.650     269.650     269.650     269.650     269.650
+CELL4     269.650     269.650     269.650     269.650     269.650     269.650
+CELL5     269.650     269.650     269.650     269.650     269.650     269.650
+CELL6     269.650     269.650     269.650     269.650     269.650     269.650
+CELL7     269.650     269.650     269.650     269.650     269.650     269.650
+CELL8     269.650     269.650     269.650     269.650     269.650     269.650
+
+    +      CROP61      CROP62      CROP63      CROP64      CROP65      CROP66
+
+CELL1     269.650     269.650     269.650     269.650     269.650     269.650
+CELL2     269.650     269.650     269.650     269.650     269.650     269.650
+CELL3     269.650     269.650     269.650     269.650     269.650     269.650
+CELL4     269.650     269.650     269.650     269.650     269.650     269.650
+CELL5     269.650     269.650     269.650     269.650     269.650     269.650
+CELL6     269.650     269.650     269.650     269.650     269.650     269.650
+CELL7     269.650     269.650     269.650     269.650     269.650     269.650
+CELL8     269.650     269.650     269.650     269.650     269.650     269.650
+
+    +      CROP67      CROP68      CROP69      CROP70      CROP71      CROP72
+
+CELL1     269.650     269.650     269.650     269.650     269.650     269.650
+CELL2     269.650     269.650     269.650     269.650     269.650     269.650
+CELL3     269.650     269.650     269.650     269.650     269.650     269.650
+CELL4     269.650     269.650     269.650     269.650     269.650     269.650
+CELL5     269.650     269.650     269.650     269.650     269.650     269.650
+CELL6     269.650     269.650     269.650     269.650     269.650     269.650
+CELL7     269.650     269.650     269.650     269.650     269.650     269.650
+CELL8     269.650     269.650     269.650     269.650     269.650     269.650
+
+GAMS 24.8.5  r61358 Released May 10, 2017 LEX-LEG x86 64bit/Linux 08/29/17 03:20:58 Page 3
+Matrix adjustment program
+Model Statistics    SOLVE ADJUS Using NLP From line 150
+
+
+MODEL STATISTICS
+
+BLOCKS OF EQUATIONS           4     SINGLE EQUATIONS           18
+BLOCKS OF VARIABLES           2     SINGLE VARIABLES            9
+NON ZERO ELEMENTS            33     NON LINEAR N-Z              8
+DERIVATIVE POOL              20     CONSTANT POOL              24
+CODE LENGTH                  86
+
+
+GENERATION TIME      =        0.001 SECONDS      4 MB  24.8.5 r61358 LEX-LEG
+
+
+EXECUTION TIME       =        0.004 SECONDS      4 MB  24.8.5 r61358 LEX-LEG
+GAMS 24.8.5  r61358 Released May 10, 2017 LEX-LEG x86 64bit/Linux 08/29/17 03:20:58 Page 4
+Matrix adjustment program
+Solution Report     SOLVE ADJUS Using NLP From line 150
+
+
+               S O L V E      S U M M A R Y
+
+     MODEL   ADJUS               OBJECTIVE  OBJ
+     TYPE    NLP                 DIRECTION  MINIMIZE
+     SOLVER  CONOPT3             FROM LINE  150
+
+**** SOLVER STATUS     1 Normal Completion         
+**** MODEL STATUS      2 Locally Optimal           
+**** OBJECTIVE VALUE                0.0000
+
+ RESOURCE USAGE, LIMIT          0.001      1000.000
+ ITERATION COUNT, LIMIT        19        100000
+ EVALUATION ERRORS              0             0
+CONOPT 3         24.8.5 r61358 Released May 10, 2017 LEG x86 64bit/Linux      
+ 
+ 
+    C O N O P T 3   version 3.17C
+    Copyright (C)   ARKI Consulting and Development A/S
+                    Bagsvaerdvej 246 A
+                    DK-2880 Bagsvaerd, Denmark
+ 
+ 
+    The model has 9 variables and 18 constraints
+    with 33 Jacobian elements, 8 of which are nonlinear.
+    The Hessian of the Lagrangian has 8 elements on the diagonal,
+    28 elements below the diagonal, and 8 nonlinear variables.
+ 
+                   Pre-triangular equations:   0
+                   Post-triangular equations:  1
+ 
+ 
+ ** Optimal solution. Reduced gradient less than tolerance.
+ 
+ 
+ CONOPT time Total                            0.001 seconds
+   of which: Function evaluations             0.000 =  0.0%
+             1st Derivative evaluations       0.000 =  0.0%
+             2nd Derivative evaluations       0.000 =  0.0%
+             Directional 2nd Derivative       0.000 =  0.0%
+ 
+
+---- EQU EQROW  Constraint on the adjusted row totals
+
+         LOWER     LEVEL     UPPER    MARGINAL
+
+CELL1     -INF      1.959   190.538      .         
+CELL2     -INF      2.039   611.174      .         
+CELL3     -INF      2.030   689.863      .         
+CELL4     -INF      2.088  1424.934      .         
+CELL5     -INF      2.071   365.069      .         
+CELL6     -INF      2.034   189.449      .         
+CELL7     -INF      1.974   806.216      .         
+CELL8     -INF      1.807    37.695      .         
+
+---- EQU EQIRRROW  Constraint on adjusted irrigated row totals
+
+         LOWER     LEVEL     UPPER    MARGINAL
+
+CELL1     -INF      1.959   108.478      .         
+CELL2     -INF      2.039   266.244      .         
+CELL3     -INF      2.030    80.442      .         
+CELL4     -INF      2.088  1424.934      .         
+CELL5     -INF      2.071   133.355      .         
+CELL6     -INF      2.034    54.970      .         
+CELL7     -INF      1.974   806.216      .         
+CELL8     -INF      1.807    31.085      .         
+
+---- EQU EQCOL  Constraint on the adjusted column totals
+
+          LOWER     LEVEL     UPPER    MARGINAL
+
+CROP35    16.000    16.000    16.000      EPS       
+
+                       LOWER     LEVEL     UPPER    MARGINAL
+
+---- EQU EQOBJ          2.773     2.773     2.773     1.000      
+
+  EQOBJ  Objective function
+
+---- VAR ZED  Correction factors to be applied to the elements of OLDMAT
+
+                LOWER     LEVEL     UPPER    MARGINAL
+
+CELL1.CROP35 1.0000E-6     1.000     +INF  4.6212E-8      
+CELL2.CROP35 1.0000E-6     1.000     +INF  3.1208E-8      
+CELL3.CROP35 1.0000E-6     1.000     +INF  -3.803E-9      
+CELL4.CROP35 1.0000E-6     1.000     +INF       .         
+CELL5.CROP35 1.0000E-6     1.000     +INF  -3.106E-9      
+CELL6.CROP35 1.0000E-6     1.000     +INF  2.3719E-8      
+CELL7.CROP35 1.0000E-6     1.000     +INF  -4.172E-8      
+CELL8.CROP35 1.0000E-6     1.000     +INF  -5.974E-9      
+
+                       LOWER     LEVEL     UPPER    MARGINAL
+
+---- VAR OBJ            -INF  2.132E-14     +INF       .         
+
+  OBJ  Objective function
+
+
+**** REPORT SUMMARY :        0     NONOPT
+                             0 INFEASIBLE
+                             0  UNBOUNDED
+                             0     ERRORS
+GAMS 24.8.5  r61358 Released May 10, 2017 LEX-LEG x86 64bit/Linux 08/29/17 03:20:58 Page 5
+Matrix adjustment program
+E x e c u t i o n
+
+
+----    167 &START NEW MATRIX
+
+----    168 PARAMETER NEWMAT  Adjusted matrix
+
+               CROP1       CROP2       CROP3       CROP4       CROP5
+
+CELL1           zero        zero        zero        zero        zero
+CELL2           zero        zero        zero        zero        zero
+CELL3           zero        zero        zero        zero        zero
+CELL4           zero        zero        zero        zero        zero
+CELL5           zero        zero        zero        zero        zero
+CELL6           zero        zero        zero        zero        zero
+CELL7           zero        zero        zero        zero        zero
+CELL8           zero        zero        zero        zero        zero
+TOTAL_AR        zero        zero        zero        zero        zero
+
+       +       CROP6       CROP7       CROP8       CROP9      CROP10
+
+CELL1           zero        zero        zero        zero        zero
+CELL2           zero        zero        zero        zero        zero
+CELL3           zero        zero        zero        zero        zero
+CELL4           zero        zero        zero        zero        zero
+CELL5           zero        zero        zero        zero        zero
+CELL6           zero        zero        zero        zero        zero
+CELL7           zero        zero        zero        zero        zero
+CELL8           zero        zero        zero        zero        zero
+TOTAL_AR        zero        zero        zero        zero        zero
+
+       +      CROP11      CROP12      CROP13      CROP14      CROP15
+
+CELL1           zero        zero        zero        zero        zero
+CELL2           zero        zero        zero        zero        zero
+CELL3           zero        zero        zero        zero        zero
+CELL4           zero        zero        zero        zero        zero
+CELL5           zero        zero        zero        zero        zero
+CELL6           zero        zero        zero        zero        zero
+CELL7           zero        zero        zero        zero        zero
+CELL8           zero        zero        zero        zero        zero
+TOTAL_AR        zero        zero        zero        zero        zero
+
+       +      CROP16      CROP17      CROP18      CROP19      CROP20
+
+CELL1           zero        zero        zero        zero        zero
+CELL2           zero        zero        zero        zero        zero
+CELL3           zero        zero        zero        zero        zero
+CELL4           zero        zero        zero        zero        zero
+CELL5           zero        zero        zero        zero        zero
+CELL6           zero        zero        zero        zero        zero
+CELL7           zero        zero        zero        zero        zero
+CELL8           zero        zero        zero        zero        zero
+TOTAL_AR        zero        zero        zero        zero        zero
+
+       +      CROP21      CROP22      CROP23      CROP24      CROP25
+
+CELL1           zero        zero        zero        zero        zero
+CELL2           zero        zero        zero        zero        zero
+CELL3           zero        zero        zero        zero        zero
+CELL4           zero        zero        zero        zero        zero
+CELL5           zero        zero        zero        zero        zero
+CELL6           zero        zero        zero        zero        zero
+CELL7           zero        zero        zero        zero        zero
+CELL8           zero        zero        zero        zero        zero
+TOTAL_AR        zero        zero        zero        zero        zero
+
+       +      CROP26      CROP27      CROP28      CROP29      CROP30
+
+CELL1           zero        zero        zero        zero        zero
+CELL2           zero        zero        zero        zero        zero
+CELL3           zero        zero        zero        zero        zero
+CELL4           zero        zero        zero        zero        zero
+CELL5           zero        zero        zero        zero        zero
+CELL6           zero        zero        zero        zero        zero
+CELL7           zero        zero        zero        zero        zero
+CELL8           zero        zero        zero        zero        zero
+TOTAL_AR        zero        zero        zero        zero        zero
+
+       +      CROP31      CROP32      CROP33      CROP34      CROP35
+
+CELL1           zero        zero        zero        zero     1.95876
+CELL2           zero        zero        zero        zero     2.03875
+CELL3           zero        zero        zero        zero     2.02975
+CELL4           zero        zero        zero        zero     2.08774
+CELL5           zero        zero        zero        zero     2.07074
+CELL6           zero        zero        zero        zero     2.03375
+CELL7           zero        zero        zero        zero     1.97375
+CELL8           zero        zero        zero        zero     1.80677
+TOTAL_AR        zero        zero        zero        zero    16.00000
+
+       +      CROP36      CROP37      CROP38      CROP39      CROP40
+
+CELL1           zero        zero        zero        zero        zero
+CELL2           zero        zero        zero        zero        zero
+CELL3           zero        zero        zero        zero        zero
+CELL4           zero        zero        zero        zero        zero
+CELL5           zero        zero        zero        zero        zero
+CELL6           zero        zero        zero        zero        zero
+CELL7           zero        zero        zero        zero        zero
+CELL8           zero        zero        zero        zero        zero
+TOTAL_AR        zero        zero        zero        zero        zero
+
+       +      CROP41      CROP42      CROP43      CROP44      CROP45
+
+CELL1           zero        zero        zero        zero        zero
+CELL2           zero        zero        zero        zero        zero
+CELL3           zero        zero        zero        zero        zero
+CELL4           zero        zero        zero        zero        zero
+CELL5           zero        zero        zero        zero        zero
+CELL6           zero        zero        zero        zero        zero
+CELL7           zero        zero        zero        zero        zero
+CELL8           zero        zero        zero        zero        zero
+TOTAL_AR        zero        zero        zero        zero        zero
+
+       +      CROP46      CROP47      CROP48      CROP49      CROP50
+
+CELL1           zero        zero        zero        zero        zero
+CELL2           zero        zero        zero        zero        zero
+CELL3           zero        zero        zero        zero        zero
+CELL4           zero        zero        zero        zero        zero
+CELL5           zero        zero        zero        zero        zero
+CELL6           zero        zero        zero        zero        zero
+CELL7           zero        zero        zero        zero        zero
+CELL8           zero        zero        zero        zero        zero
+TOTAL_AR        zero        zero        zero        zero        zero
+
+       +      CROP51      CROP52      CROP53      CROP54      CROP55
+
+CELL1           zero        zero        zero        zero        zero
+CELL2           zero        zero        zero        zero        zero
+CELL3           zero        zero        zero        zero        zero
+CELL4           zero        zero        zero        zero        zero
+CELL5           zero        zero        zero        zero        zero
+CELL6           zero        zero        zero        zero        zero
+CELL7           zero        zero        zero        zero        zero
+CELL8           zero        zero        zero        zero        zero
+TOTAL_AR        zero        zero        zero        zero        zero
+
+       +      CROP56      CROP57      CROP58      CROP59      CROP60
+
+CELL1           zero        zero        zero        zero        zero
+CELL2           zero        zero        zero        zero        zero
+CELL3           zero        zero        zero        zero        zero
+CELL4           zero        zero        zero        zero        zero
+CELL5           zero        zero        zero        zero        zero
+CELL6           zero        zero        zero        zero        zero
+CELL7           zero        zero        zero        zero        zero
+CELL8           zero        zero        zero        zero        zero
+TOTAL_AR        zero        zero        zero        zero        zero
+
+       +      CROP61      CROP62      CROP63      CROP64      CROP65
+
+CELL1           zero        zero        zero        zero        zero
+CELL2           zero        zero        zero        zero        zero
+CELL3           zero        zero        zero        zero        zero
+CELL4           zero        zero        zero        zero        zero
+CELL5           zero        zero        zero        zero        zero
+CELL6           zero        zero        zero        zero        zero
+CELL7           zero        zero        zero        zero        zero
+CELL8           zero        zero        zero        zero        zero
+TOTAL_AR        zero        zero        zero        zero        zero
+
+       +      CROP66      CROP67      CROP68      CROP69      CROP70
+
+CELL1           zero        zero        zero        zero        zero
+CELL2           zero        zero        zero        zero        zero
+CELL3           zero        zero        zero        zero        zero
+CELL4           zero        zero        zero        zero        zero
+CELL5           zero        zero        zero        zero        zero
+CELL6           zero        zero        zero        zero        zero
+CELL7           zero        zero        zero        zero        zero
+CELL8           zero        zero        zero        zero        zero
+TOTAL_AR        zero        zero        zero        zero        zero
+
+       +      CROP71      CROP72   CRPLND_AR     IRRI_AR
+
+CELL1           zero        zero     1.95876     1.95876
+CELL2           zero        zero     2.03875     2.03875
+CELL3           zero        zero     2.02975     2.02975
+CELL4           zero        zero     2.08774     2.08774
+CELL5           zero        zero     2.07074     2.07074
+CELL6           zero        zero     2.03375     2.03375
+CELL7           zero        zero     1.97375     1.97375
+CELL8           zero        zero     1.80677     1.80677
+TOTAL_AR        zero        zero        zero        zero
+
+
+----    169 &END NEW MATRIX
+
+
+EXECUTION TIME       =        0.001 SECONDS      3 MB  24.8.5 r61358 LEX-LEG
+
+
+USER: Small MUD - 5 User License                     G170411/0001AS-LNX
+      University of Wisconsin-Madison, Computer Sciences Dept.   DC8499
+      License for teaching and research at degree granting institutions
+
+
+**** FILE SUMMARY
+
+Input      /var/lib/condor/execute/dir_147540/MODEL.gms
+Output     /var/lib/condor/execute/dir_147540/solve.out
