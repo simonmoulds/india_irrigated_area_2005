@@ -348,4 +348,4 @@ gripc_rain_area = raster("data-raw/GRIPC/GRIPC_rainfed_area.asc") %>% `projectio
 gripc_pady_area = raster("data-raw/GRIPC/GRIPC_paddy_area.asc") %>% `projection<-`(proj)
 
 print("Saving objects...")
-save(x, gaez_suit, gaez_pot_yield, india_mkt_access, india_cropland_area, india_irri_area, gripc_irri_area, gripc_rain_area, gripc_pady_area, file="data/input_data.RData")
+save(x, template, gaez_suit, gaez_pot_yield, india_mkt_access, india_cropland_area, india_irri_area, gripc_irri_area, gripc_rain_area, gripc_pady_area, file="data/input_data.RData")

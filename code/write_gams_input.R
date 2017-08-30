@@ -22,9 +22,14 @@ source("code/allocation_helper_funs.R")
 ## source("code/load_input_data.R")
 load("data/input_data.RData")
 
-crops = names(x)[-(1:5)]
 years = x[["Year"]] %>% unique %>% sort
 states = x[["State"]] %>% unique
+
+crops = names(x)[-(1:5)]
+kharif_crops = grep("^.*-kharif$", crops)
+rabi_crops = grep("^.*-rabi$", crops)
+summer_crops = grep("^.*-summer$", crops)
+whole_year_crops = grep("^.*-whole_year$", crops)
 
 ## for testing only:
 years = 2000
@@ -35,10 +40,32 @@ if (!dir.exists(dir)) {
     dir.create(dir)
 }
 
+build_state_map = function(dists, template, ...) {
+    map = raster(template)
+    map[] = 0
+    for (i in 1:length(dists)) {
+        dist_frac_map = raster(file.path("data", "district_frac", paste0("dist_", dists[i], "_frac1_ll.tif")))
+        dist_frac_pts = as(dist_frac_map, "SpatialPoints")
+        map[dist_frac_pts] = map[dist_frac_pts] + dist_frac_map[dist_frac_pts]
+    }
+    map[!map > 0] = NA
+    map = trim(map)
+    map
+}
+
 ## write input files
 for (i in 1:length(years)) {
     for (j in 1:length(states)) {
+
         dists = x$ADM2_CODE[x$State %in% states[j]] %>% unique
+        state_frac_map = build_state_map(dists, template)
+        state_frac_map[is.na(state_frac_map)] = 0
+        state_frac_pts = as(state_frac_map, "SpatialPoints")
+        state_frac_val = state_frac_map[state_frac_pts]
+        n_cell = length(state_frac_pts)
+
+        state_tbl = as.data.frame(matrix(data=0, nrow=n_cell, ncol=length(crops))) %>% setNames(crops)
+        
         for (k in 1:length(dists)) {
 
             xx = x[x$Year %in% years[i] & x$ADM2_CODE %in% dists[k],]
@@ -48,6 +75,7 @@ for (i in 1:length(years)) {
             dist_frac_pts = as(dist_frac_map, "SpatialPoints")
             dist_frac_val = dist_frac_map[dist_frac_pts]
             n_cell = length(dist_frac_pts)
+            row_ix = cellFromXY(state_frac_map, dist_frac_pts)
 
             dist_tbl = as.data.frame(matrix(data=0, nrow=n_cell, ncol=length(crops))) %>% setNames(crops)
 
@@ -138,25 +166,42 @@ for (i in 1:length(years)) {
                 }
             }
 
-            ## now divide into kharif, rabi, summer, whole_year
-            kharif_cols = grep("^.*-kharif$", crops)
-            rabi_cols = grep("^.*-rabi$", crops)
-            summer_cols = grep("^.*-summer$", crops)
-            whole_year_cols = grep("^.*-whole_year$", crops)
+            ## ## now divide into kharif, rabi, summer, whole_year
+            ## kharif_cols = grep("^.*-kharif$", crops)
+            ## rabi_cols = grep("^.*-rabi$", crops)
+            ## summer_cols = grep("^.*-summer$", crops)
+            ## whole_year_cols = grep("^.*-whole_year$", crops)
 
-            ## this variable contains the two constraints
-            kharif_dist_tbl = dist_tbl[,kharif_cols]
-            rabi_dist_tbl = dist_tbl[,rabi_cols]
-            summer_dist_tbl = dist_tbl[,summer_cols]
-            whole_year_dist_tbl = dist_tbl[,whole_year_cols]
+            ## ## this variable contains the two constraints
+            ## kharif_dist_tbl = dist_tbl[,kharif_cols]
+            ## rabi_dist_tbl = dist_tbl[,rabi_cols]
+            ## summer_dist_tbl = dist_tbl[,summer_cols]
+            ## whole_year_dist_tbl = dist_tbl[,whole_year_cols]
 
-            ## kharif and whole year crops
-
-            ## include crops grown over the whole year in the optimisation
-            kharif_dist_tbl %<>% cbind(whole_year_dist_tbl)
+            state_tbl[row_ix,] = dist_tbl
             
-            flag = TRUE
-            kharif_dist_tbl2 = try(allocate_fun(kharif_dist_tbl, dists[k], years[i], season="kharif", cropland_area=cropland_area, irri_area=irri_area, dir=dir))
+        }
+
+        ix = state_frac_val > 0
+        state_tbl = state_tbl[ix,]
+        state_irri_area = india_irri_area[[i]][state_frac_pts][ix]
+        state_cropland_area = india_cropland_area[state_frac_pts][ix]
+
+        ix = state_cropland_area < state_irri_area
+        state_cropland_area[ix] = state_irri_area[ix]
+        
+        kharif_state_tbl = state_tbl[,kharif_crops]
+        rabi_state_tbl = state_tbl[,rabi_crops]
+        summer_state_tbl = state_tbl[,summer_crops]
+        whole_year_state_tbl = state_tbl[,whole_year_crops]
+        
+        ## kharif and whole year crops
+
+        ## include crops grown over the whole year in the optimisation
+        kharif_state_tbl %<>% cbind(whole_year_state_tbl)
+            
+        flag = TRUE
+        kharif_state_tbl2 = try(allocate_fun(kharif_state_tbl, dists[k], years[i], season="kharif", cropland_area=state_cropland_area, irri_area=state_irri_area, dir=dir))
 
             if (!isTRUE(all.equal(dim(kharif_dist_tbl), dim(kharif_dist_tbl2)))) {
                 flag = FALSE

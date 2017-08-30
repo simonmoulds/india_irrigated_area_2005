@@ -32,7 +32,7 @@ write_gams_input = function(x, cropland_area, irri_area, fn, ...) {
     cat("<solver>CPLEX</solver>\n", file=con)
     cat("<inputType>GAMS</inputType>\n", file=con)
     cat("<client>Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:54.0) Gecko/20100101 Firefox/54.0@144.173.225.124</client>\n", file=con)
-    cat("<priority>short</priority>\n", file=con)
+    cat("<priority>long</priority>\n", file=con)
     cat("<email>sim.moulds@gmail.com</email>\n", file=con)
     cat("<model><![CDATA[", file=con)
     

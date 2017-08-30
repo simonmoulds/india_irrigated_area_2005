@@ -80,7 +80,9 @@ OPTION ITERLIM=100000;
 OPTION DECIMALS=5;
 * It is preferable to use the solver CONOPT, which has a greater precision
 * than MINOS5
-OPTION NLP=CONOPT3;
+* OPTION NLP=CONOPT3;
+OPTION NLP=pathnlp;
+* ADJUS.reslim=2000;
 SOLVE ADJUS USING NLP MINIMIZING OBJ;
 
 *==============================================================================*
