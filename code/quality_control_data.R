@@ -75,18 +75,50 @@ for (i in 1:length(state_nms)) {
 
     state_nm = gsub(" ", "_", state_nms[i])
     state_dir = file.path("data", "qc_plots", state_nm)
-    if (dir.exists(state_dir)) {
-        unlink(state_dir, recursive=TRUE)
+    if (!dir.exists(state_dir)) {
+        dir.create(state_dir)
     }
-    dir.create(state_dir)
 
     for (j in 1:length(crop_nms)) {
         crop_nm = gsub(" ", "_", crop_nms[j])
-        dir.create(file.path(state_dir, crop_nm))
+        crop_dir = file.path(state_dir, crop_nm)
+        if (!dir.exists(crop_dir)) {
+            dir.create(crop_dir)
+        }
     }
 }
 
-state_nms = "Andhra Pradesh" ## TODO: remove this
+## state_nms = "Andhra Pradesh" ## TODO: remove this
+## state_nms = c("Andhra Pradesh","Uttar Pradesh")
+state_nms = c("Uttar Pradesh")
+
+linear_interp = function(x, na_ix, ...) {
+    x[na_ix] = NA
+    x = zoo::na.approx(x, na.rm=FALSE)
+    x
+}
+locf_interp = function(x, na_ix, ...) {
+    x[na_ix] = NA
+    x = zoo::na.locf(x, na.rm=FALSE, ...)
+    x
+}
+irr_frac_interp = function(irr, tot, ix, nb_ix, ...) {
+    mean_irr_frac = mean(irr[nb_ix] / tot[nb_ix])
+    irr[ix] = tot[ix] * mean_irr_frac
+    irr
+}
+
+tot_frac_interp = function(tot, irr, ix, nb_ix, ...) {
+    mean_tot_frac = mean(tot[nb_ix] / irr[nb_ix])
+    tot[ix] = irr[ix] * mean_tot_frac
+    tot
+}
+
+crops =
+    grep("^apy_.*$", names(x), value=TRUE) %>%
+    gsub("apy_", "", x=.) %>%
+    gsub("-(kharif|rabi|summer|autumn|winter|whole_year)", "", x=.) %>%
+    unique
 
 for (i in 1:length(state_nms)) {
     state_nm = state_nms[i]
@@ -103,6 +135,19 @@ for (i in 1:length(state_nms)) {
         row_ix = x[["ADM2_CODE"]] %in% dist
         xx = x[row_ix,]
 
+        ## here we set to zero all values below a certain threshold
+        threshold = 10 ## 10 hectares (i.e. ~0.1% grid cell area)
+        for (k in 1:length(crops)) {
+            ptn = paste0("^apy_", crops[k], "-.*$")
+            cols = grep(ptn, names(xx))
+            tot = rowSums(xx[,cols], na.rm=TRUE)
+            if (max(tot) <= threshold) {
+                ptn = paste0("^(apy|irr)_", crops[k], ".*$")
+                cols = grep(ptn, names(xx))
+                xx[,cols] = 0
+            }
+        }
+
         ## Andhra Pradesh
         ## ##############
 
@@ -113,9 +158,8 @@ for (i in 1:length(state_nms)) {
             xx[["irr_rice-winter"]] = xx[[c("irr_rice-autumn")]]
             xx[["irr_rice-autumn"]] = 0
 
-            mean_irr_frac = mean(xx[["irr_rice-winter"]][c(2,4)] / xx[["apy_rice-winter"]][c(2,4)])
-            xx[["irr_rice-winter"]][3] = xx[["apy_rice-winter"]][3] * mean_irr_frac
-
+            xx[["irr_rice-winter"]] %<>% irr_frac_interp(xx[["apy_rice-winter"]], 3, c(2,4))
+            
             ## ## confusion between sunflower
             ## xx[["apy_sunflower-kharif"]][c(6:7,9:11)] = xx[["apy_sunflower-whole_year"]][c(6:7,9:11)]
             ## xx[["apy_sunflower-kharif"]][c(8)] = xx[["apy_sunflower-rabi"]][c(8)]
@@ -134,6 +178,54 @@ for (i in 1:length(state_nms)) {
                 xx[["apy_pearl_millet-rabi"]][8] = xx[["irr_pearl_millet-rabi"]][8]
             }   
         }
+            
+        if (state_nm %in% "Uttar Pradesh") {
+
+            xx[["apy_lentil-rabi"]] %<>% linear_interp(5:6)
+            xx[["apy_pigeonpea-kharif"]] %<>% linear_interp(c(3,5,6))
+            xx[["irr_pigeonpea-kharif"]] %<>% linear_interp(c(3,5,6))
+            xx[["apy_potato-kharif"]] %<>% linear_interp(1:4)
+
+            xx[["irr_barley-rabi"]] %<>% irr_frac_interp(xx[["apy_barley-rabi"]], c(6), c(5,7))
+            xx[["irr_barley-rabi"]] %<>% irr_frac_interp(xx[["apy_barley-rabi"]], 11, 10)
+            
+            xx[["irr_chickpea-rabi"]] %<>% irr_frac_interp(xx[["apy_chickpea-rabi"]], c(6), c(5,7))
+            xx[["irr_chickpea-rabi"]] %<>% irr_frac_interp(xx[["apy_chickpea-rabi"]], 11, 10)
+
+            xx[["irr_cotton-rabi"]] %<>% irr_frac_interp(xx[["apy_cotton-rabi"]], c(6), c(5,7))
+            xx[["irr_cotton-rabi"]] %<>% irr_frac_interp(xx[["apy_cotton-rabi"]], 11, 10)
+            
+            xx[["irr_wheat-rabi"]] %<>% irr_frac_interp(xx[["apy_wheat-rabi"]], c(6), c(5,7))
+            xx[["irr_wheat-rabi"]] %<>% irr_frac_interp(xx[["apy_wheat-rabi"]], 11, 10)
+
+            ## Aligarh
+            ## #######
+            if (dist_nm %in% "Aligarh") {
+                xx[["irr_chickpea-rabi"]] %<>% irr_frac_interp(xx[["apy_chickpea-rabi"]], 6, 5)
+            }
+
+            ## Ambedkar Nagar
+            ## ##############
+            if (dist_nm %in% "Ambedkar Nagar") {
+                xx[["irr_chickpea-rabi"]] %<>% linear_interp(na_ix=6)
+            }
+
+            ## Auraiya
+            ## #######
+            if (dist_nm %in% "Auraiya") {
+                xx[["irr_barley-rabi"]] %<>% irr_frac_interp(xx[["apy_barley-rabi"]], c(4), c(3,5))
+                xx[["irr_chickpea-rabi"]] %<>% irr_frac_interp(xx[["apy_chickpea-rabi"]], c(4), c(3,5))
+                xx[["irr_wheat-rabi"]] %<>% irr_frac_interp(xx[["apy_wheat-rabi"]], c(4), c(3,5))
+            }
+
+            ## Badaun
+            ## ######
+            if (dist_nm %in% "Badaun") {
+                xx[["irr_barley-rabi"]][10] = xx[["irr_barley-kharif"]][10] + xx[["irr_barley-rabi"]][10]
+                xx[["apy_barley-rabi"]] %<>% tot_frac_interp(xx[["irr_barley-rabi"]], 10, 9)
+                xx[["irr_barley-kharif"]]
+            }            
+        }
 
         ## create plot for checking purposes
         for (k in 1:length(crop_nms)) {
@@ -142,7 +234,6 @@ for (i in 1:length(state_nms)) {
             plot_file_nm = file.path("data", "qc_plots", gsub(" ", "_", state_nm), gsub(" ", "_", crop_nms[k]), paste0(tolower(gsub(" ", "_", dist_nm)), "_", crop_nms[k], "_qc_plot.pdf"))
             ggsave(plot_file_nm, plot=p, width=7.5, height=5, device=pdf, path=".")
         }
-
         x[row_ix,] = xx
     }
 
@@ -152,7 +243,12 @@ for (i in 1:length(state_nms)) {
     for (k in 1:length(crop_nms)) {
         cwd = getwd()
         setwd(file.path("data", "qc_plots", gsub(" ", "_", state_nm), gsub(" ", "_", crop_nms[k])))
-        system("pdftk `ls *.pdf | sort` output combined_plots.pdf")
+        fn = paste0("combined_plots_", crop_nms[k], ".pdf")
+        if (file.exists(fn)) {
+            unlink(fn)
+        }
+        system(paste0("pdftk `ls *.pdf | sort` output ", fn, " dont_ask"))
+        system(paste0("mv ", fn, " ", file.path(cwd, "data","qc_plots", gsub(" ", "_", state_nm))))
         setwd(cwd)
     }
 }

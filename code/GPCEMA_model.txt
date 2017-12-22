@@ -74,15 +74,19 @@ MODEL ADJUS /ALL/;
 *==============================================================================*
 *--------------------------Solution of the problem ----------------------------*
 
+$onecho > conopt3.opt
+rvhess = 15
+$offecho
+
 OPTION ITERLIM=100000;
 * The following option limits to 5 the number of decimals
 * in DISPLAY statement output only.
 OPTION DECIMALS=5;
 * It is preferable to use the solver CONOPT, which has a greater precision
 * than MINOS5
-* OPTION NLP=CONOPT3;
-OPTION NLP=pathnlp;
-* ADJUS.reslim=2000;
+OPTION NLP=CONOPT3;
+ADJUS.OptFile = 1;
+ADJUS.reslim = 2000;
 SOLVE ADJUS USING NLP MINIMIZING OBJ;
 
 *==============================================================================*

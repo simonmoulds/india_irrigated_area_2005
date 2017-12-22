@@ -719,6 +719,13 @@ ix = !duplicated(x[["ADM2_CODE"]])
 dists = x[["ADM2_CODE"]][ix]
 
 allocate_irrigated_area = function(x, crop_nm, season_order) {
+    ## Allocates irrigated area (which is *not* disaggregated between
+    ## seasons) to seasons based on the total area of the crop grown in
+    ## each season. Seasons are considered in turn according to the
+    ## 'season_order' argument. Surplus irrigated area is carried over
+    ## to the next season. For example, almost all wheat is grown during
+    ## rabi under irrigated conditions, therefore 'rabi' is the first
+    ## season in 'season_order'. 
 
     irr_nm = paste0("irr_", crop_nm)
     if (!irr_nm %in% names(x)) {
@@ -741,6 +748,8 @@ allocate_irrigated_area = function(x, crop_nm, season_order) {
 }
 
 get_mapspam_irri_frac = function(x, crop_nm, ...) {
+    ## Retrieve irrigated area from MapSPAM product - this is used to
+    ## fill missing inventory data
 
     mapspam_tot_nm = paste0("mapspam_atot_", crop_nm)
     mapspam_irr_nm = paste0("mapspam_xirr_", crop_nm)

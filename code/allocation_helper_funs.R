@@ -31,11 +31,11 @@ write_gams_input = function(x, cropland_area, irri_area, fn, ...) {
     cat("<category>milp</category>\n", file=con)
     cat("<solver>CPLEX</solver>\n", file=con)
     cat("<inputType>GAMS</inputType>\n", file=con)
-    cat("<client>Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:54.0) Gecko/20100101 Firefox/54.0@144.173.225.124</client>\n", file=con)
+    cat("<client>Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:55.0) Gecko/20100101 Firefox/55.0@86.141.248.177</client>\n", file=con)
     cat("<priority>long</priority>\n", file=con)
     cat("<email>sim.moulds@gmail.com</email>\n", file=con)
     cat("<model><![CDATA[", file=con)
-    
+                                                                                    
     ## write model header
     writeLines(header, con)
 
@@ -86,7 +86,7 @@ any_runtime_errors = function(x, ...) {
     }
 
     if (any(grepl("REPORT SUMMARY", x))) {
-        n_error = x[grep("[0-9]+[ ]+ERRORS$", x)] %>% gsub("ERRORS", "", .) %>% trimws %>% as.numeric
+        n_error = x[grep(grep("\\s+[0-9]+\\s+ERRORS$", x))] %>% gsub("ERRORS", "", .) %>% trimws %>% as.numeric
         res = n_error > 0
     } else {
         res = FALSE
@@ -99,6 +99,9 @@ any_server_errors = function(x, ...) {
 }
 
 adjust_totals = function(x, cropland_area, irri_area, ...) {
+    ## This function adjusts totals of (irrigated) cropland to ensure
+    ## a solution is possible
+    
     cropland_avail = sum(cropland_area)
     irrigated_avail = sum(irri_area)
 

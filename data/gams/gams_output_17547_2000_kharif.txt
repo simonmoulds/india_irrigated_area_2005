@@ -1,15 +1,15 @@
-Job number = 5552049
-Job password = dhbkLeWv
+Job number = 5751746
+Job password = oxwzdKcL
 Executed on prod-exec-1.neos-server.org
-GAMS 24.8.5  r61358 Released May 10, 2017 LEX-LEG x86 64bit/Linux 08/29/17 03:13:31 Page 1
+GAMS 24.9.2  r64480 Released Nov 14, 2017 LEX-LEG x86 64bit/Linux 12/21/17 09:05:24 Page 1
 Matrix adjustment program
 C o m p i l a t i o n
 
 
 
 
-COMPILATION TIME     =        0.003 SECONDS      3 MB  24.8.5 r61358 LEX-LEG
-GAMS 24.8.5  r61358 Released May 10, 2017 LEX-LEG x86 64bit/Linux 08/29/17 03:13:31 Page 2
+COMPILATION TIME     =        0.003 SECONDS      3 MB  24.9.2 r64480 LEX-LEG
+GAMS 24.9.2  r64480 Released Nov 14, 2017 LEX-LEG x86 64bit/Linux 12/21/17 09:05:24 Page 2
 Matrix adjustment program
 E x e c u t i o n
 
@@ -3017,7 +3017,7 @@ CELL245       2.222       2.222       2.222       2.222       2.222       2.222
 CELL246       2.222       2.222       2.222       2.222       2.222       2.222
 CELL247       2.222       2.222       2.222       2.222       2.222       2.222
 
-GAMS 24.8.5  r61358 Released May 10, 2017 LEX-LEG x86 64bit/Linux 08/29/17 03:13:31 Page 3
+GAMS 24.9.2  r64480 Released Nov 14, 2017 LEX-LEG x86 64bit/Linux 12/21/17 09:05:24 Page 3
 Matrix adjustment program
 Model Statistics    SOLVE ADJUS Using NLP From line 389
 
@@ -3031,11 +3031,11 @@ DERIVATIVE POOL              20     CONSTANT POOL           2,774
 CODE LENGTH              32,312
 
 
-GENERATION TIME      =        0.020 SECONDS      6 MB  24.8.5 r61358 LEX-LEG
+GENERATION TIME      =        0.020 SECONDS      6 MB  24.9.2 r64480 LEX-LEG
 
 
-EXECUTION TIME       =        4.572 SECONDS      6 MB  24.8.5 r61358 LEX-LEG
-GAMS 24.8.5  r61358 Released May 10, 2017 LEX-LEG x86 64bit/Linux 08/29/17 03:13:31 Page 4
+EXECUTION TIME       =        4.397 SECONDS      6 MB  24.9.2 r64480 LEX-LEG
+GAMS 24.9.2  r64480 Released Nov 14, 2017 LEX-LEG x86 64bit/Linux 12/21/17 09:05:24 Page 4
 Matrix adjustment program
 Solution Report     SOLVE ADJUS Using NLP From line 389
 
@@ -3050,17 +3050,17 @@ Solution Report     SOLVE ADJUS Using NLP From line 389
 **** MODEL STATUS      4 Infeasible                
 **** OBJECTIVE VALUE                0.4713
 
- RESOURCE USAGE, LIMIT          0.069      1000.000
+ RESOURCE USAGE, LIMIT          0.068      1000.000
  ITERATION COUNT, LIMIT       348        100000
  EVALUATION ERRORS              0             0
-CONOPT 3         24.8.5 r61358 Released May 10, 2017 LEG x86 64bit/Linux      
+CONOPT 3         24.9.2 r64480 Released Nov 14, 2017 LEG x86 64bit/Linux      
 
  ** Warning **  Memory Limit for Hessians exceeded.
  You can use the Conopt option "rvhess"
 
  
  
-    C O N O P T 3   version 3.17C
+    C O N O P T 3   version 3.17F
     Copyright (C)   ARKI Consulting and Development A/S
                     Bagsvaerdvej 246 A
                     DK-2880 Bagsvaerd, Denmark
@@ -3085,9 +3085,9 @@ CONOPT 3         24.8.5 r61358 Released May 10, 2017 LEG x86 64bit/Linux
                 help the optimization.
  
  
- CONOPT time Total                            0.060 seconds
-   of which: Function evaluations             0.002 =  3.3%
-             1st Derivative evaluations       0.002 =  3.3%
+ CONOPT time Total                            0.059 seconds
+   of which: Function evaluations             0.003 =  5.1%
+             1st Derivative evaluations       0.001 =  1.7%
  
 
 ---- EQU EQROW  Constraint on the adjusted row totals
@@ -6717,7 +6717,7 @@ CELL247.CROP64 1.0000E-6     1.715     +INF       EPS
                              0  UNBOUNDED
                              0     ERRORS
                              5  PROJECTED
-GAMS 24.8.5  r61358 Released May 10, 2017 LEX-LEG x86 64bit/Linux 08/29/17 03:13:31 Page 5
+GAMS 24.9.2  r64480 Released Nov 14, 2017 LEX-LEG x86 64bit/Linux 12/21/17 09:05:24 Page 5
 Matrix adjustment program
 E x e c u t i o n
 
@@ -10495,7 +10495,7 @@ TOTAL_AR        zero        zero        zero        zero
 ----    408 &END NEW MATRIX
 
 
-EXECUTION TIME       =        0.021 SECONDS      6 MB  24.8.5 r61358 LEX-LEG
+EXECUTION TIME       =        0.023 SECONDS      6 MB  24.9.2 r64480 LEX-LEG
 
 
 USER: Small MUD - 5 User License                     G170411/0001AS-LNX
@@ -10505,5 +10505,5 @@ USER: Small MUD - 5 User License                     G170411/0001AS-LNX
 
 **** FILE SUMMARY
 
-Input      /var/lib/condor/execute/dir_146772/MODEL.gms
-Output     /var/lib/condor/execute/dir_146772/solve.out
+Input      /var/lib/condor/execute/dir_206624/MODEL.gms
+Output     /var/lib/condor/execute/dir_206624/solve.out

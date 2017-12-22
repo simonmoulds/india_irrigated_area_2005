@@ -1,7 +1,7 @@
 ## Author : Simon Moulds
 ## Date   : August 2017
 
-## this script loads all the data required by write_gams_input.R, saving
+## this script loads all data required by run_allocation.R, saving
 ## the various objects as a single RData file.
 
 library(magrittr)
@@ -9,7 +9,6 @@ library(dplyr)
 library(tidyr)
 library(raster)
 library(rgdal)
-
 
 ## Subnational inventory data
 x = readRDS("data/apy_indiastat_combined_data_qc.rds")

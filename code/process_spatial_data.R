@@ -13,28 +13,33 @@ library(gdalUtils)
 ## Here we generate a template raster image with the correct extent and
 ## resolution for India
 
-aea.crs = "+proj=aea +lat_1=28 +lat_2=12 +lat_0=20 +lon_0=78 +x_0=2000000 +y_0=2000000 +ellps=WGS84 +datum=WGS84 +units=m +no_defs"
+## ********************************************************************
+## NB no longer using aea projection, so these aspects of the code
+## are commented out
+## ********************************************************************
 
-ogr2ogr(src_datasource_name = "data-raw/india_adm2_2001/data/g2008_2_India.shp",
-        dst_datasource_name = "data/g2008_2_India_aea.shp",
-        t_srs=aea.crs,
-        overwrite=TRUE,
-        verbose=TRUE)
+## aea.crs = "+proj=aea +lat_1=28 +lat_2=12 +lat_0=20 +lon_0=78 +x_0=2000000 +y_0=2000000 +ellps=WGS84 +datum=WGS84 +units=m +no_defs"
+
+## ogr2ogr(src_datasource_name = "data-raw/india_adm2_2001/data/g2008_2_India.shp",
+##         dst_datasource_name = "data/g2008_2_India_aea.shp",
+##         t_srs=aea.crs,
+##         overwrite=TRUE,
+##         verbose=TRUE)
 
 adm2_ll = readOGR("data-raw/india_adm2_2001/data", layer="g2008_2_India")
-adm2_aea = readOGR("data", layer="g2008_2_India_aea")
+## adm2_aea = readOGR("data", layer="g2008_2_India_aea")
 
 ## neighbouring countries
 system("unzip -o data-raw/FAO_GAUL_boundary_levels.zip -d data")
 
-ogr2ogr(src_datasource_name = "data/g2008_0.shp",
-        dst_datasource_name = "data/g2008_0_aea.shp",
-        t_srs=aea.crs,
-        overwrite=TRUE,
-        verbose=TRUE)
+## ogr2ogr(src_datasource_name = "data/g2008_0.shp",
+##         dst_datasource_name = "data/g2008_0_aea.shp",
+##         t_srs=aea.crs,
+##         overwrite=TRUE,
+##         verbose=TRUE)
 
 india_nb_ll = readOGR("data", layer="g2008_0")
-india_nb_aea = readOGR("data", layer="g2008_0_aea")
+## india_nb_aea = readOGR("data", layer="g2008_0_aea")
 
 ## India bounding box (lat-long)
 east  <- 98  
@@ -56,24 +61,24 @@ template <- setValues(template, values=rep(1,ncell(template)))
 if (file.exists(file.path("data", "template_ll.tif")))
     file.remove(file.path("data", "template_ll.tif"))
 
-if (file.exists(file.path("data", "template_aea.tif")))
-    file.remove(file.path("data", "template_aea.tif"))
+## if (file.exists(file.path("data", "template_aea.tif")))
+##     file.remove(file.path("data", "template_aea.tif"))
 
 writeRaster(template,
             file.path("data", "template_ll.tif"),
             format="GTiff",
             overwrite=TRUE)
 
-gdalwarp(srcfile=file.path("data", "template_ll.tif"),
-         dstfile=file.path("data", "template_aea.tif"),
-         t_srs=aea.crs,
-         r="bilinear",
-         overwrite=TRUE,
-         verbose=TRUE,
-         output_Raster=FALSE)
+## gdalwarp(srcfile=file.path("data", "template_ll.tif"),
+##          dstfile=file.path("data", "template_aea.tif"),
+##          t_srs=aea.crs,
+##          r="bilinear",
+##          overwrite=TRUE,
+##          verbose=TRUE,
+##          output_Raster=FALSE)
 
-template_coarse_aea = raster(file.path("data", "template_aea.tif"))
-template_fine_aea = disaggregate(template_coarse_aea, fact=10)
+## template_coarse_aea = raster(file.path("data", "template_aea.tif"))
+## template_fine_aea = disaggregate(template_coarse_aea, fact=10)
 
 template_coarse_ll = template
 template_fine_ll = disaggregate(template_coarse_ll, fact=10)
@@ -161,8 +166,8 @@ myfun = function(adm2, nb, template_coarse, template_fine, path, suffix, ...) {
     }
 }
 
-## a. Albers Equal Area projection
-myfun(adm2_aea, india_nb_aea, template_coarse_aea, template_fine_aea, path="data/district_frac", suffix="aea")
+## ## a. Albers Equal Area projection
+## myfun(adm2_aea, india_nb_aea, template_coarse_aea, template_fine_aea, path="data/district_frac", suffix="aea")
 
 ## b. Latitude-longitude
 myfun(adm2_ll, india_nb_ll, template_coarse_ll, template_fine_ll, path="data/district_frac", suffix="ll")

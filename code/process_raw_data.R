@@ -232,7 +232,7 @@ irr_area =
     arrange(State, District, Year) %>%
     ungroup
 
-## TODO: now estimate seasonal irrigated area
+## NB: seasonal irrigated area is estimated in process_data.R
 
 ## nms_lut = read.csv("data/indiastat_names_lut.csv", header=TRUE)
 ## names(irr) = nms_lut$NEWNAME[match(names(irr), nms_lut$OLDNAME)]

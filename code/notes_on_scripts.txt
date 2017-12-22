@@ -1,0 +1,48 @@
+allocation_helper_funs.R
+########################
+functions
+
+process_raw_data.R
+##################
+combines inventory data showing irrigated area (Indiastat) and total
+crop area by season (data.gov.in)
+
+format_data.R
+#############
+separate inventory data into irrigated/rainfed portions
+
+grass_resample_maps.sh
+######################
+resample irrigated area maps
+
+load_input_data.R
+#################
+loads all data required by run_allocation.R, and saves in RData format
+
+notes.txt
+#########
+notes on district aggregation
+
+process_cropland_map.R
+######################
+aggregate iiasa-ifpri cropland map to 5 arcminute resolution
+
+process_spatial_data.R
+######################
+process all spatial data to ensure that all input maps have the same
+spatial extent and resolution
+
+quality_control_data.R
+######################
+perform quality control on inventory data
+
+run_allocation.R
+################
+run the allocation, including calls to NEOS server for GAMS optimisation
+
+write_output_maps.R
+###################
+write output raster maps
+
+GPCEMA_header.txt
+GPCEMA_model.txt

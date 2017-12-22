@@ -2,7 +2,7 @@
 <category>milp</category>
 <solver>CPLEX</solver>
 <inputType>GAMS</inputType>
-<client>Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:54.0) Gecko/20100101 Firefox/54.0@144.173.225.124</client>
+<client>Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:55.0) Gecko/20100101 Firefox/55.0@86.141.248.177</client>
 <priority>long</priority>
 <email>sim.moulds@gmail.com</email>
 <model><![CDATA[$TITLE Matrix adjustment program
@@ -3762,15 +3762,19 @@ MODEL ADJUS /ALL/;
 *==============================================================================*
 *--------------------------Solution of the problem ----------------------------*
 
+$onecho > conopt3.opt
+rvhess = 15
+$offecho
+
 OPTION ITERLIM=100000;
 * The following option limits to 5 the number of decimals
 * in DISPLAY statement output only.
 OPTION DECIMALS=5;
 * It is preferable to use the solver CONOPT, which has a greater precision
 * than MINOS5
-* OPTION NLP=CONOPT3;
-OPTION NLP=pathnlp;
-* ADJUS.reslim=2000;
+OPTION NLP=CONOPT3;
+ADJUS.OptFile = 1;
+ADJUS.reslim = 2000;
 SOLVE ADJUS USING NLP MINIMIZING OBJ;
 
 *==============================================================================*

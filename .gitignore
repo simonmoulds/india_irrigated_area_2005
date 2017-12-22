@@ -18,6 +18,7 @@ data/qc_plots
 data/SCIENTIFIC_DATA_IRRIGATION_MAP_2000_2015
 data/iiasa-ifpri-cropland-map
 data/GAEZ
+data/gams
 data-raw/marketinfluence_tcm234-229510.zip
 data/market-influence
 data-raw/IRRI South Asia Rice Map 2000-2001.zip
