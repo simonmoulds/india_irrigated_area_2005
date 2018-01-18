@@ -86,7 +86,7 @@ any_runtime_errors = function(x, ...) {
     }
 
     if (any(grepl("REPORT SUMMARY", x))) {
-        n_error = x[grep(grep("\\s+[0-9]+\\s+ERRORS$", x))] %>% gsub("ERRORS", "", .) %>% trimws %>% as.numeric
+        n_error = x[grep("\\s+[0-9]+\\s+ERRORS$", x)] %>% gsub("ERRORS", "", .) %>% trimws %>% as.numeric
         res = n_error > 0
     } else {
         res = FALSE

@@ -19,7 +19,7 @@ library(raster)
 
 ## load input data
 source("code/allocation_helper_funs.R")
-## source("code/load_input_data.R")
+source("code/load_input_data.R")
 load("data/input_data.RData")
 
 years = x[["Year"]] %>% unique %>% sort
@@ -33,8 +33,10 @@ summer_crops = grep("^.*-summer$", crops)
 whole_year_crops = grep("^.*-whole_year$", crops)
 
 ## for testing only:
-years = 2000
-states = "Andhra Pradesh"
+years = 2005
+## states = "Andhra Pradesh"
+states = "Uttar Pradesh"
+dists = x$ADM2_CODE[x$State %in% states] %>% unique
 
 dir = file.path("data", "gams")
 if (!dir.exists(dir)) {
@@ -67,7 +69,8 @@ for (i in 1:length(years)) {
 
     ##     state_tbl = as.data.frame(matrix(data=0, nrow=n_cell, ncol=length(crops))) %>% setNames(crops)
         
-    for (k in 1:length(dists)) {
+    ## for (k in 1:length(dists)) {
+    for (k in c(28,34,49)) {
 
         xx = x[x$Year %in% years[i] & x$ADM2_CODE %in% dists[k],]
 
@@ -76,7 +79,7 @@ for (i in 1:length(years)) {
         dist_frac_pts = as(dist_frac_map, "SpatialPoints")
         dist_frac_val = dist_frac_map[dist_frac_pts]
         n_cell = length(dist_frac_pts)
-        row_ix = cellFromXY(state_frac_map, dist_frac_pts)
+        ## row_ix = cellFromXY(state_frac_map, dist_frac_pts)
 
         dist_tbl = as.data.frame(matrix(data=0, nrow=n_cell, ncol=length(crops))) %>% setNames(crops)
 
@@ -184,9 +187,6 @@ for (i in 1:length(years)) {
         ## kharif and whole year crops
         ## ###########################
 
-        ## TODO: 1. check whether optimisation is necessary **DONE**
-        ##       2. write maps
-
         ## include crops grown over the whole year in the optimisation
         kharif_dist_tbl %<>% cbind(whole_year_dist_tbl)
 
@@ -206,14 +206,28 @@ for (i in 1:length(years)) {
 
         if (optim) {
 
-            kharif_dist_tbl2 = try(allocate_fun(kharif_dist_tbl, dists[k], years[i], season="kharif", cropland_area=dist_cropland_area, irri_area=dist_irri_area, dir=dir))
+            count = 1
+            repeat {
+                kharif_dist_tbl2 = try(allocate_fun(kharif_dist_tbl, dists[k], years[i], season="kharif", cropland_area=dist_cropland_area, irri_area=dist_irri_area, dir=dir))
+                if (inherits(kharif_dist_tbl2, "try-error")) {
+                    if (count >= 10) {
 
-            if (inherits(kharif_dist_tbl2, "try-error")) {
-                flag = FALSE
+                        cat("Allocation of kharif crops for district", dists[k], "in year", years[i], "was unsuccessful: using initial estimate\n")
+                        kharif_dist_tbl2 = kharif_dist_tbl                        
+                        flag = FALSE
+                        break()
+                    }
+
+                } else {
+                    cat("Allocation of kharif crops for district", dists[k], "in year", years[i], "was successful\n")
+                    break()
+                }
+                count = count + 1
             }
 
         } else {
             kharif_dist_tbl2 = kharif_dist_tbl
+            cat("Allocation of kharif crops for district", dists[k], "in year", years[i], "was successful (optimisation not required)\n")
         }
 
         ## flag indicates whether allocation was successful
@@ -253,22 +267,41 @@ for (i in 1:length(years)) {
 
             if (optim) {                
 
-                rabi_dist_tbl2 = try(allocate_fun(rabi_dist_tbl,
-                                                  dists[k],
-                                                  years[i],
-                                                  season="rabi",
-                                                  cropland_area=dist_cropland_area2,
-                                                  irri_area=dist_irri_area2,
-                                                  dir=dir))
-                if (inherits(rabi_dist_tbl2, "try-error")) {
-                    flag = FALSE
+                count = 1
+                repeat {
+                    rabi_dist_tbl2 = try(allocate_fun(rabi_dist_tbl,
+                                                      dists[k],
+                                                      years[i],
+                                                      season="rabi",
+                                                      cropland_area=dist_cropland_area2,
+                                                      irri_area=dist_irri_area2,
+                                                      dir=dir))
+                    if (inherits(rabi_dist_tbl2, "try-error")) {
+                        if (count >= 10) {
+
+                            cat("Allocation of rabi crops for district", dists[k], "in year", years[i], "was unsuccessful: using initial estimate\n")
+                            rabi_dist_tbl2 = rabi_dist_tbl                        
+                            flag = FALSE
+                            break()
+                        }
+
+                    } else {
+                        cat("Allocation of rabi crops for district", dists[k], "in year", years[i], "was successful\n")
+                        break()
+                    }
+                    count = count + 1
                 }
 
             } else {
+                cat("Allocation of rabi crops for district", dists[k], "in year", years[i], "was successful (optimisation not required)\n")
                 rabi_dist_tbl2 = rabi_dist_tbl
             }
+            
+        } else {
+            cat("Allocation of previous season was unsuccesful: using initial estimate\n")
+            rabi_dist_tbl2 = rabi_dist_tbl
         }
-
+        
         ## summer crops
         ## ############
 
@@ -283,20 +316,39 @@ for (i in 1:length(years)) {
 
             if (optim) {                
 
-                summer_dist_tbl2 = try(allocate_fun(summer_dist_tbl,
-                                                    dists[k],
-                                                    years[i],
-                                                    season="summer",
-                                                    cropland_area=dist_cropland_area2,
-                                                    irri_area=dist_irri_area2,
-                                                    dir=dir))
-                if (inherits(summer_dist_tbl2, "try-error")) {
-                    flag = FALSE
-                }
+                repeat {
+                    summer_dist_tbl2 = try(allocate_fun(summer_dist_tbl,
+                                                        dists[k],
+                                                        years[i],
+                                                        season="summer",
+                                                        cropland_area=dist_cropland_area2,
+                                                        irri_area=dist_irri_area2,
+                                                        dir=dir))
 
+                    if (inherits(summer_dist_tbl2, "try-error")) {
+                        if (count >= 10) {
+
+                            cat("Allocation of summer crops for district", dists[k], "in year", years[i], "was unsuccessful: using initial estimate\n")
+                            summer_dist_tbl2 = summer_dist_tbl                        
+                            flag = FALSE
+                            break()
+                        }
+
+                    } else {
+                        cat("Allocation of summer crops for district", dists[k], "in year", years[i], "was successful\n")
+                        break()
+                    }
+                    count = count + 1
+                }
+                
             } else {
+                cat("Allocation of summer crops for district", dists[k], "in year", years[i], "was successful (optimisation not required)\n")
                 summer_dist_tbl2 = summer_dist_tbl
             }
+
+        } else {
+            cat("Allocation of previous season was unsuccesful: using initial estimate\n")
+            summer_dist_tbl2 = summer_dist_tbl
         }
 
         ## write output only if all seasons were allocated
@@ -307,8 +359,6 @@ for (i in 1:length(years)) {
             saveRDS(kharif_dist_tbl2, file.path(dir, paste0("gams_output_", dists[k], "_", years[i], "_kharif.rds")))
             saveRDS(rabi_dist_tbl2, file.path(dir, paste0("gams_output_", dists[k], "_", years[i], "_rabi.rds")))
             saveRDS(summer_dist_tbl2, file.path(dir, paste0("gams_output_", dists[k], "_", years[i], "_summer.rds")))
-
-
 
         } else {
             warning()

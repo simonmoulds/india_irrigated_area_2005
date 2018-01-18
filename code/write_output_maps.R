@@ -10,9 +10,13 @@ library(raster)
 
 load("data/input_data.RData")
 
-years = x[["Year"]] %>% unique %>% sort
-states = x[["State"]] %>% unique
-dists = x[["ADM2_CODE"]] %>% unique 
+## years = x[["Year"]] %>% unique %>% sort
+## states = x[["State"]] %>% unique
+## dists = x[["ADM2_CODE"]] %>% unique 
+
+fs = list.files("data/gams", pattern="gams_output")
+years = sapply(strsplit(fs, "_"), FUN=function(x) x[4]) %>% unique %>% as.numeric
+dists = sapply(strsplit(fs, "_"), FUN=function(x) x[3]) %>% unique %>% as.numeric
 
 ## create directory for output maps, if it does not already exist
 if (!dir.exists("data/output_maps")) {
@@ -28,7 +32,7 @@ read_crop_data = function(dist, year, path, ...) {
 
 ## get crop names
 tmp =
-    read_crop_data(dists[2], years[1], dir) %>%
+    read_crop_data(dists[1], years[1], dir) %>%
     unname %>%
     do.call(cbind, .)
 
@@ -36,41 +40,33 @@ crops = grep("^(irr|rain).*$", names(tmp), value=TRUE)
     
 for (i in 1:length(years)) {
 
-    ## create raster maps to hold output
-    maps = vector(mode="list", length=length(crops))
     for (k in 1:length(crops)) {
-        fn = file.path("data","output_maps", paste0("INDIA_", toupper(gsub("-","_",crops[k])), "_", years[i], ".tif"))
 
-        if (!file.exists(fn)) {        
-            writeRaster(template,
-                        filename=fn,
-                        format="GTiff",
-                        overwrite=TRUE)
-        }
-        maps[[k]] = raster(fn)
-    }
-    
-    for (j in 1:length(dists)) {
+        map = template
+        map[] = 0
+        
+        for (j in 1:length(dists)) {
 
-        ## get district frac (data/district_frac)
-        dist_frac_map = raster(file.path("data", "district_frac", paste0("dist_", dists[j], "_frac1_ll.tif")))
-        dist_frac_pts = as(dist_frac_map, "SpatialPoints")
+            ## get district frac (data/district_frac)
+            dist_frac_map = raster(file.path("data", "district_frac", paste0("dist_", dists[j], "_frac1_ll.tif")))
+            dist_frac_pts = as(dist_frac_map, "SpatialPoints")
 
-        dist_tbl =
-            read_crop_data(dists[j], years[i], dir) %>%
-            unname %>%
-            do.call(cbind, .)
+            dist_tbl =
+                read_crop_data(dists[j], years[i], dir) %>%
+                unname %>%
+                do.call(cbind, .)
 
-        if (!all(names(dist_tbl) %in% crops)) {
-            stop()
-        }
+            if (!all(names(dist_tbl) %in% crops)) {
+                stop()
+            }
 
-        for (k in 1:length(crops)) {
-            crop = crops[k]
-            vals0 = maps[[j]][dist_frac_pts]
-            vals1 = dist_tbl[,crop,drop=TRUE]
+            vals0 = map[dist_frac_pts]
+            vals1 = dist_tbl[,crops[k],drop=TRUE]
             vals2 = rowSums(data.frame(vals0, vals1), na.rm=TRUE)
-            maps[[j]][dist_frac_pts] = vals2
+            map[dist_frac_pts] = vals2
         }
+
+        fn = file.path("data","output_maps", paste0("INDIA_", toupper(gsub("-","_",crops[k])), "_", years[i], ".tif"))
+        writeRaster(map, filename=fn, format="GTiff", overwrite=TRUE)
     }
 }

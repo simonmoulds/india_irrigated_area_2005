@@ -150,82 +150,13 @@ for (i in 1:length(state_nms)) {
 
         ## Andhra Pradesh
         ## ##############
+        if (state_nm %in% "Andhra Pradesh")
+            source("quality_control/andhra_pradesh_qc.R")
 
-        if (state_nm %in% "Andhra Pradesh") {
-
-            ## correct confusion between irrigated rice seasons
-            xx[["irr_rice-summer"]][7:11] = xx[["irr_rice-winter"]][7:11]
-            xx[["irr_rice-winter"]] = xx[[c("irr_rice-autumn")]]
-            xx[["irr_rice-autumn"]] = 0
-
-            xx[["irr_rice-winter"]] %<>% irr_frac_interp(xx[["apy_rice-winter"]], 3, c(2,4))
-            
-            ## ## confusion between sunflower
-            ## xx[["apy_sunflower-kharif"]][c(6:7,9:11)] = xx[["apy_sunflower-whole_year"]][c(6:7,9:11)]
-            ## xx[["apy_sunflower-kharif"]][c(8)] = xx[["apy_sunflower-rabi"]][c(8)]
-            ## xx[["apy_sunflower-whole_year"]] = 0
-            ## xx[["apy_sunflower-rabi"]] = 0
-
-            ## district-level corrections
-            if (dist_nm %in% "Adilabad") {
-                xx[["irr_pearl_millet-summer"]][8:9] = xx[["apy_pearl_millet-rabi"]][8:9]
-                xx[["apy_other_cereals-kharif"]][1:4] = NA
-                xx[["apy_sugarcane-whole_year"]][c(8,10)] = xx[["irr_sugarcane-whole_year"]][c(8,10)]
-            }
-
-            if (dist_nm %in% "Karimnagar") {
-                xx[["apy_wheat-rabi"]][8] = xx[["irr_wheat-rabi"]][8]
-                xx[["apy_pearl_millet-rabi"]][8] = xx[["irr_pearl_millet-rabi"]][8]
-            }   
-        }
-            
-        if (state_nm %in% "Uttar Pradesh") {
-
-            xx[["apy_lentil-rabi"]] %<>% linear_interp(5:6)
-            xx[["apy_pigeonpea-kharif"]] %<>% linear_interp(c(3,5,6))
-            xx[["irr_pigeonpea-kharif"]] %<>% linear_interp(c(3,5,6))
-            xx[["apy_potato-kharif"]] %<>% linear_interp(1:4)
-
-            xx[["irr_barley-rabi"]] %<>% irr_frac_interp(xx[["apy_barley-rabi"]], c(6), c(5,7))
-            xx[["irr_barley-rabi"]] %<>% irr_frac_interp(xx[["apy_barley-rabi"]], 11, 10)
-            
-            xx[["irr_chickpea-rabi"]] %<>% irr_frac_interp(xx[["apy_chickpea-rabi"]], c(6), c(5,7))
-            xx[["irr_chickpea-rabi"]] %<>% irr_frac_interp(xx[["apy_chickpea-rabi"]], 11, 10)
-
-            xx[["irr_cotton-rabi"]] %<>% irr_frac_interp(xx[["apy_cotton-rabi"]], c(6), c(5,7))
-            xx[["irr_cotton-rabi"]] %<>% irr_frac_interp(xx[["apy_cotton-rabi"]], 11, 10)
-            
-            xx[["irr_wheat-rabi"]] %<>% irr_frac_interp(xx[["apy_wheat-rabi"]], c(6), c(5,7))
-            xx[["irr_wheat-rabi"]] %<>% irr_frac_interp(xx[["apy_wheat-rabi"]], 11, 10)
-
-            ## Aligarh
-            ## #######
-            if (dist_nm %in% "Aligarh") {
-                xx[["irr_chickpea-rabi"]] %<>% irr_frac_interp(xx[["apy_chickpea-rabi"]], 6, 5)
-            }
-
-            ## Ambedkar Nagar
-            ## ##############
-            if (dist_nm %in% "Ambedkar Nagar") {
-                xx[["irr_chickpea-rabi"]] %<>% linear_interp(na_ix=6)
-            }
-
-            ## Auraiya
-            ## #######
-            if (dist_nm %in% "Auraiya") {
-                xx[["irr_barley-rabi"]] %<>% irr_frac_interp(xx[["apy_barley-rabi"]], c(4), c(3,5))
-                xx[["irr_chickpea-rabi"]] %<>% irr_frac_interp(xx[["apy_chickpea-rabi"]], c(4), c(3,5))
-                xx[["irr_wheat-rabi"]] %<>% irr_frac_interp(xx[["apy_wheat-rabi"]], c(4), c(3,5))
-            }
-
-            ## Badaun
-            ## ######
-            if (dist_nm %in% "Badaun") {
-                xx[["irr_barley-rabi"]][10] = xx[["irr_barley-kharif"]][10] + xx[["irr_barley-rabi"]][10]
-                xx[["apy_barley-rabi"]] %<>% tot_frac_interp(xx[["irr_barley-rabi"]], 10, 9)
-                xx[["irr_barley-kharif"]]
-            }            
-        }
+        ## Uttar Pradesh
+        ## ##############
+        if (state_nm %in% "Uttar Pradesh")
+            source("quality_control/uttar_pradesh_qc.R")
 
         ## create plot for checking purposes
         for (k in 1:length(crop_nms)) {
@@ -310,10 +241,13 @@ for (i in 1:length(sub_col_nms)) {
     
     total = x[[total_col_nm]]
     irr = x[[irr_col_nm]]
-    rain = total - irr
 
-    irr[is.na(irr)] = 0
-    rain[is.na(rain)] = 0
+    total[!is.finite(total)] = 0
+    irr[!is.finite(irr)] = 0
+
+    total[total < irr] = irr[total < irr]
+    
+    rain = total - irr
 
     irr[irr < 0] = 0
     rain[rain < 0] = 0
